@@ -1,36 +1,81 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# FC-Connections
 
-## Getting Started
+A Farcaster mini app that empowers users to forge meaningful connections across their personal and professional lives.
 
-First, run the development server:
+*Original design docs created with Claude: [https://claude.ai/share/dd97373f-1323-4f07-8b86-f77282ea1fd4](https://claude.ai/share/dd97373f-1323-4f07-8b86-f77282ea1fd4)*
+
+## 📱 What is FC-Connections?
+
+FC-Connections provides Farcaster users with a seamless, purpose-driven space to connect with like-minded individuals based on specific needs. Users can create and discover three types of connection profiles:
+
+- 💖 **Partner Connections** - For dating and romantic relationships
+- 🤝 **Friend Connections** - For platonic friendships and activities
+- 💼 **Job Connections** - For professional opportunities
+
+## 🏗️ Project Structure
+
+- **Frontend**: NextJS app in the root directory
+- **Backend**: Cloudflare Workers API in the `/api` directory
+
+## 🎨 Design Philosophy
+
+FC-Connections embraces a clean, modern interface with a color palette that intuitively distinguishes between connection types:
+
+- 💖 Partner: `#FF5E7D` (Warm pink)
+- 🤝 Friend: `#4CAF50` (Friendly green)
+- 💼 Job: `#2196F3` (Professional blue)
+
+We use **Inter** for UI text and **Space Grotesk** for headings to create a friendly, approachable experience.
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js (v18+)
+- Bun
+- Wrangler CLI (`npm install -g wrangler`)
+- Cloudflare account (for API deployment)
+
+### Frontend Setup
 
 ```bash
+# Install dependencies
+npm install
+
+# Run development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### API Setup
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+```bash
+# Navigate to API directory
+cd api
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+# Install dependencies
+bun install
 
-## Learn More
+# Setup local database (see api/README.md for details)
+bun run db:local
+bun run db:execute
 
-To learn more about Next.js, take a look at the following resources:
+# Run development server
+bun run dev
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📚 Documentation
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- For detailed API setup, see [api/README.md](api/README.md)
+- For complete MVP requirements, see [docs/MVP_REQUIREMENTS.md](docs/MVP_REQUIREMENTS.md)
+- For page breakdown details, see [docs/PAGE_BREAKDOWN.md](docs/PAGE_BREAKDOWN.md)
+- For database schema information, see [docs/DB_INITIAL_PLAN.md](docs/DB_INITIAL_PLAN.md)
 
-## Deploy on Vercel
+## 🔒 Authentication
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+FC-Connections uses Farcaster authentication for a seamless web3 social experience. Users connect with their Farcaster ID (FID) to access the platform.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 📱 Key Features
+
+- **Type-Specific Profiles** - Create different profiles for different connection needs
+- **Discovery & Filtering** - Find matches based on preferences and interests
+- **Mobile-First Design** - Optimized for the Farcaster frames and mobile experience

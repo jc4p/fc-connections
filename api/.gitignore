@@ -1,0 +1,23 @@
+# Development
+.env
+.dev.vars
+.wrangler
+
+# Build
+dist/
+.wrangler/
+node_modules/
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw? 

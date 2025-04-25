@@ -1,0 +1,22 @@
+{
+  "name": "fc-connections-api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev --local",
+    "deploy": "wrangler deploy",
+    "build": "bun build ./src/index.js --outdir ./dist --target bun",
+    "db:local": "wrangler d1 create fc_connections --local",
+    "db:create": "wrangler d1 create fc_connections",
+    "db:execute": "wrangler d1 execute fc_connections --local --file=./schema.sql",
+    "db:execute:prod": "wrangler d1 execute fc_connections --file=./schema.sql"
+  },
+  "dependencies": {
+    "hono": "^3.12.0"
+  },
+  "devDependencies": {
+    "bun-types": "latest",
+    "wrangler": "^3.22.0"
+  }
+} 
