@@ -13,10 +13,10 @@
     "db:execute:prod": "wrangler d1 execute fc_connections --file=./schema.sql"
   },
   "dependencies": {
-    "hono": "^3.12.0"
+    "hono": "^4.7.7"
   },
   "devDependencies": {
     "bun-types": "latest",
     "wrangler": "^3.22.0"
   }
-} 
+}
