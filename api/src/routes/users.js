@@ -36,6 +36,36 @@ users.get('/:fid', async (c) => {
   }
 });
 
+// Get all profiles for a specific user
+users.get('/:fid/profiles', async (c) => {
+  const fid = c.req.param('fid');
+
+  try {
+    // First, check if the user exists (optional, but good practice)
+    const userExists = await c.env.DB.prepare(
+      'SELECT 1 FROM users WHERE fid = ?'
+    ).bind(fid).first();
+
+    if (!userExists) {
+      return c.json({ error: 'User not found' }, 404);
+    }
+
+    // Fetch all profiles associated with the FID
+    const { results } = await c.env.DB.prepare(
+      `SELECT id, profile_type, is_active, view_count, created_at, updated_at 
+       FROM profiles 
+       WHERE fid = ? 
+       ORDER BY created_at DESC`
+    ).bind(fid).all();
+
+    // Return an empty array if no profiles found, not an error
+    return c.json({ profiles: results || [] }); 
+  } catch (error) {
+    console.error(`Error fetching profiles for user ${fid}:`, error);
+    return c.json({ error: 'Failed to fetch user profiles' }, 500);
+  }
+});
+
 // Create or update user
 users.post('/', async (c) => {
   try {

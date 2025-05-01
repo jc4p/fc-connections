@@ -1,0 +1,86 @@
+.cardLink {
+    display: block; 
+    text-decoration: none;
+    color: inherit; /* Inherit text color from parent */
+}
+
+.cardLink:hover .card {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* Replicates hover:shadow-md */
+}
+
+.cardLink:hover .displayName {
+    color: var(--brand-primary); /* Replicates group-hover:text-indigo-600 */
+}
+
+.card {
+    background-color: white;
+    padding: 1rem; /* Replicates p-4 */
+    border-radius: 0.5rem; /* Replicates rounded-lg */
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06); /* Replicates shadow */
+    transition: box-shadow 0.2s ease-in-out; /* Replicates transition-shadow duration-200 */
+    border-left: 4px solid var(--gray-300); /* Default border, replicates border-l-4 */
+}
+
+/* Apply type-specific border colors */
+.cardPartner {
+    border-left-color: var(--connection-partner);
+}
+.cardFriend {
+    border-left-color: var(--connection-friend);
+}
+.cardJob {
+    border-left-color: var(--connection-job);
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.75rem; /* Replicates mb-3 */
+}
+
+.pfpWrapper {
+    flex-shrink: 0; /* Replicates flex-shrink-0 */
+    margin-right: 0.75rem; /* Approximation for space-x-3 */
+}
+
+.pfp {
+    border-radius: 9999px; /* Replicates rounded-full */
+    display: block; /* Ensure image behaves like a block element */
+}
+
+.userInfo {
+    flex: 1 1 0%; /* Replicates flex-1 */
+    min-width: 0; /* Replicates min-w-0 */
+}
+
+.displayName {
+    font-size: 0.875rem; /* Replicates text-sm */
+    font-weight: 500; /* Replicates font-medium */
+    color: var(--gray-900);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* Replicates truncate */
+    transition: color 0.2s ease;
+}
+
+.fidText {
+    font-size: 0.75rem; /* Replicates text-xs */
+    color: var(--gray-500);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* Replicates truncate */
+}
+
+.fields {
+    font-size: 0.875rem; /* Replicates text-sm */
+    color: var(--gray-700);
+}
+
+.fields p {
+    margin-bottom: 0.25rem; /* Replicates space-y-1 approx */
+    line-height: 1.4; /* Adjust line-height */
+}
+
+.fieldLabel {
+    font-weight: 500; /* Replicates font-medium */
+} 

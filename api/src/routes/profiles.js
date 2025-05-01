@@ -2,11 +2,14 @@ import { Hono } from 'hono';
 
 const profiles = new Hono();
 
-// Get all profiles (with optional type filter)
+// Get all profiles (with optional type filter and pagination)
 profiles.get('/', async (c) => {
   try {
     const type = c.req.query('type');
-    let query = 'SELECT p.*, u.display_name, u.avatar_url FROM profiles p JOIN users u ON p.fid = u.fid WHERE p.is_active = 1';
+    const limit = parseInt(c.req.query('limit') || '20'); // Default limit 20
+    const offset = parseInt(c.req.query('offset') || '0'); // Default offset 0
+
+    let query = 'SELECT p.id, p.fid, p.profile_type, p.is_active, p.view_count, p.created_at, p.updated_at, u.display_name, u.avatar_url FROM profiles p JOIN users u ON p.fid = u.fid WHERE p.is_active = 1';
     const bindings = [];
     
     if (type) {
@@ -14,11 +17,29 @@ profiles.get('/', async (c) => {
       bindings.push(type);
     }
     
-    query += ' ORDER BY p.view_count DESC LIMIT 50';
+    query += ' ORDER BY p.created_at DESC LIMIT ? OFFSET ?'; // Changed sorting to created_at, added pagination
+    bindings.push(limit, offset);
     
     const { results } = await c.env.DB.prepare(query).bind(...bindings).all();
     
-    return c.json({ profiles: results });
+    // Optionally, get total count for pagination metadata
+    let countQuery = 'SELECT COUNT(*) as count FROM profiles WHERE is_active = 1';
+    const countBindings = [];
+    if (type) {
+      countQuery += ' AND profile_type = ?';
+      countBindings.push(type);
+    }
+    const countResult = await c.env.DB.prepare(countQuery).bind(...countBindings).first();
+    const totalCount = countResult?.count || 0;
+
+    return c.json({ 
+      profiles: results || [],
+      pagination: {
+        total: totalCount,
+        limit,
+        offset
+      }
+    });
   } catch (error) {
     console.error('Error fetching profiles:', error);
     return c.json({ error: 'Failed to fetch profiles' }, 500);
@@ -202,6 +223,32 @@ profiles.put('/:id', async (c) => {
   } catch (error) {
     console.error(`Error updating profile ${profileId}:`, error);
     return c.json({ error: 'Failed to update profile' }, 500);
+  }
+});
+
+// Delete a profile
+profiles.delete('/:id', async (c) => {
+  const profileId = c.req.param('id');
+
+  try {
+    // Check if the profile exists before attempting to delete
+    const profile = await c.env.DB.prepare(
+      'SELECT id FROM profiles WHERE id = ?'
+    ).bind(profileId).first();
+
+    if (!profile) {
+      return c.json({ error: 'Profile not found' }, 404);
+    }
+
+    // Delete the profile (associated field values will be deleted by CASCADE)
+    await c.env.DB.prepare(
+      'DELETE FROM profiles WHERE id = ?'
+    ).bind(profileId).run();
+
+    return c.json({ message: 'Profile deleted successfully' });
+  } catch (error) {
+    console.error(`Error deleting profile ${profileId}:`, error);
+    return c.json({ error: 'Failed to delete profile' }, 500);
   }
 });
 

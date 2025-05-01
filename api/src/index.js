@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { userRoutes } from './routes/users.js';
 import { profileRoutes } from './routes/profiles.js';
+import { definitionRoutes } from './routes/definitions.js';
 
 // Create the main Hono app
 const app = new Hono();
@@ -27,6 +28,7 @@ app.get('/', (c) => {
 // Mount route groups
 app.route('/api/users', userRoutes);
 app.route('/api/profiles', profileRoutes);
+app.route('/api/field-definitions', definitionRoutes);
 
 // Export for Cloudflare Workers
 export default app; 

@@ -1,36 +1,57 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { updateProfile, deleteProfile } from '@/lib/api';
-// import DynamicForm from '@/components/DynamicForm'; // Your form component
+import { useFrame } from '@/context/FrameContext'; // Import the hook
+import DynamicProfileForm from './profiles/DynamicProfileForm';
+import styles from './EditProfileClient.module.css'; // Import CSS Module
 
-export default function EditProfileClient({ profileId, initialProfileData, fieldDefinitions }) {
+export default function EditProfileClient({ profileType, profileId, initialProfileData }) {
   const router = useRouter();
-  const [error, setError] = useState(null);
+  // Get FID state from context (might be useful for authorization checks later)
+  const { fid, isLoading: isFrameLoading, error: frameError } = useFrame();
+  
+  // Local state
+  const [submitError, setSubmitError] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  // Initial form data could be extracted from initialProfileData.fields or similar
-  // Example: const [formData, setFormData] = useState(initialProfileData?.fields || {});
+  // Memoize the formatted initial form data based on the incoming profile data
+  const initialFormData = useMemo(() => {
+      if (initialProfileData?.profile_field_values) {
+          return initialProfileData.profile_field_values.reduce((acc, item) => {
+              acc[item.field_key] = item.value;
+              return acc;
+          }, {});
+      } else {
+           console.warn("Initial profile data or field values missing for edit form.");
+           return {}; // Return empty object if data is missing
+      }
+  }, [initialProfileData]); // Only recompute if the initialProfileData prop changes
 
   const handleSubmit = async (formData) => {
     if (isSubmitting) return;
-    console.log('Updating profile via Client Component:', formData);
-    setError(null);
+    // TODO: Add authorization check using fid from context if needed by API
+    console.log('Updating profile:', formData);
+    setSubmitError(null);
     setIsSubmitting(true);
 
     try {
-      // TODO: Structure payload as needed for your API
-      const payload = { fields: formData }; // Or flatten if required
+      const payload = {
+        profile_field_values: Object.entries(formData).map(([key, value]) => ({ 
+            field_key: key, 
+            value: String(value)
+        }))
+      };
       await updateProfile(profileId, payload);
       alert('Profile updated successfully!');
-      // Redirect to My Profiles page on success
       router.push('/my-profiles');
-      // Optionally call router.refresh() if you want to refetch server data on the target page
+      router.refresh();
     } catch (err) {
-      setError(err.message || 'Failed to update profile.');
-      console.error("EditProfileClient Submit Error:", err);
+        const errorMessage = err.response?.data?.error || err.message || 'Failed to update profile.';
+        setSubmitError(errorMessage);
+        console.error("EditProfileClient Submit Error:", err);
     } finally {
        setIsSubmitting(false);
     }
@@ -38,71 +59,90 @@ export default function EditProfileClient({ profileId, initialProfileData, field
 
   const handleDelete = async () => {
     if (isDeleting) return;
+    // TODO: Add authorization check using fid from context if needed by API
     if (!window.confirm('Are you absolutely sure you want to delete this profile? This action cannot be undone.')) {
         return;
     }
     
-    setError(null);
+    setSubmitError(null);
     setIsDeleting(true);
     try {
         await deleteProfile(profileId);
         alert('Profile deleted successfully!');
-        router.push('/my-profiles'); // Redirect after deletion
-        // Optionally call router.refresh()
+        router.push('/my-profiles');
+        router.refresh();
     } catch (err) {
-        setError(err.message || 'Failed to delete profile.');
+        const errorMessage = err.response?.data?.error || err.message || 'Failed to delete profile.';
+        setSubmitError(errorMessage);
         console.error("EditProfileClient Delete Error:", err);
-        setIsDeleting(false); // Re-enable button if delete failed
-    }
-    // No finally needed for setIsDeleting as we navigate away on success
+        setIsDeleting(false);
+    } 
   };
 
   const handleCancel = () => {
-    // Ask for confirmation before navigating away
     if (window.confirm('Are you sure you want to cancel? Any unsaved changes will be lost.')) {
-      router.push('/my-profiles'); // Redirect back to My Profiles
+      router.push('/my-profiles');
     }
   };
 
-  return (
-    <div>
-      {/* Placeholder for DynamicForm implementation */}
-      {/* 
-      <DynamicForm 
-        fields={fieldDefinitions} 
-        initialData={initialProfileData?.fields || {}} // Pass initial field values
-        onSubmit={handleSubmit} 
-        onCancel={handleCancel} 
-        isSubmitting={isSubmitting}
-        submitText="Update Profile"
-        cancelText="Cancel"
-      /> 
-      */}
-      
-      <p>Dynamic Edit Form Placeholder (Client) for ID: {profileId}</p>
-      <p>Fields:</p>
-      <pre>{JSON.stringify(fieldDefinitions, null, 2)}</pre>
-      <p>Initial Data (for form):</p>
-      <pre>{JSON.stringify(initialProfileData?.fields || {}, null, 2)}</pre>
-      
-      {/* Simulate form actions */} 
-      <div style={{ marginTop: '1rem' }}>
-        <button onClick={() => handleSubmit({ updatedField: 'new client data' })} disabled={isSubmitting || isDeleting}>
-          {isSubmitting ? 'Saving...' : 'Simulate Save Changes'}
-        </button>
-        <button onClick={handleCancel} style={{ marginLeft: '1rem' }} disabled={isSubmitting || isDeleting}>
-          Simulate Cancel
-        </button>
-      </div>
+  // Handle frame loading/error states
+  if (isFrameLoading) {
+      return <p className={styles.loadingText}>Waiting for Farcaster user...</p>;
+  }
+  if (frameError) {
+      return <p className={styles.errorText}>Error: {frameError}</p>;
+  }
+  // It might still be okay to edit even if FID failed, 
+  // but actions might fail later if API requires FID for auth.
+  // Consider if we should block editing if FID is null.
+  // if (!fid) {
+  //      return <p className={styles.errorText}>Error: Could not determine Farcaster user FID.</p>;
+  // }
 
-      {/* Delete Button */} 
-      <div style={{ marginTop: '2rem', borderTop: '1px solid #eee', paddingTop: '1rem' }}>
-          <button onClick={handleDelete} disabled={isSubmitting || isDeleting} style={{ backgroundColor: '#f44336', color: 'white'}}>
-             {isDeleting ? 'Deleting...' : 'Delete Profile'}
-          </button>
-      </div>
+  // Determine if the initial data needed for the form is available
+  // Use the memoized initialFormData directly. Check if it has keys.
+  const canRenderForm = Object.keys(initialFormData).length > 0 || !initialProfileData?.profile_field_values;
+
+  return (
+    <div className={styles.container}>
+      {/* Show loading text if initialFormData isn't ready yet */}
+      {!canRenderForm && <p className={styles.loadingText}>Loading profile data...</p>} 
       
-      {error && <p style={{ color: 'red', marginTop: '1rem' }}>Error: {error}</p>} 
+      {canRenderForm && (
+        <DynamicProfileForm 
+          profileType={profileType}
+          initialData={initialFormData}
+          onSubmit={handleSubmit} 
+          submitButtonText={isSubmitting ? 'Saving...' : 'Save Changes'}
+          isSubmitting={isSubmitting}
+        />
+      )}
+
+      {/* Render action buttons only if form can be rendered */}
+      {canRenderForm && (
+          <div className={styles.actionButtonsContainer}> 
+            <div>
+                <button 
+                    onClick={handleCancel} 
+                    disabled={isSubmitting || isDeleting}
+                    className={styles.cancelButton}
+                >
+                    Cancel
+                </button>
+            </div>
+            <div>
+                <button 
+                    onClick={handleDelete} 
+                    disabled={isSubmitting || isDeleting}
+                    className={styles.deleteButton}
+                    >
+                    {isDeleting ? 'Deleting...' : 'Delete Profile'}
+                </button>
+            </div>
+          </div>
+      )}
+      
+      {submitError && <p className={styles.errorText}>Error: {submitError}</p>} 
     </div>
   );
 } 

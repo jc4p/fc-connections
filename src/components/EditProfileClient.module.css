@@ -1,0 +1,61 @@
+.container {
+    /* Add padding or margins if needed */
+}
+
+.loadingText {
+    color: var(--gray-600);
+    padding: 1rem;
+    background-color: var(--gray-100);
+    border-radius: 0.375rem;
+    text-align: center;
+}
+
+.errorText {
+    color: color-mix(in srgb, var(--connection-partner) 90%, black);
+    padding: 1rem;
+    background-color: color-mix(in srgb, var(--connection-partner) 15%, transparent);
+    border: 1px solid color-mix(in srgb, var(--connection-partner) 30%, transparent);
+    border-radius: 0.375rem;
+    margin-top: 1rem; /* Replicates mt-4 */
+}
+
+.actionButtonsContainer {
+    margin-top: 1.5rem; /* Replicates mt-6 */
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Replicates justify-between */
+    padding-top: 1rem;
+    border-top: 1px solid var(--gray-200);
+}
+
+.cancelButton {
+    composes: secondary from global;
+    display: inline-flex;
+    justify-content: center;
+    /* No margin needed as spacing handled by container */
+}
+
+.deleteButton {
+    composes: secondary from global; /* Start with secondary base */
+    display: inline-flex;
+    justify-content: center;
+    background-color: color-mix(in srgb, var(--connection-partner) 90%, white); /* Replicates bg-red-600 approximation */
+    color: color-mix(in srgb, var(--connection-partner) 95%, black);
+    border-color: color-mix(in srgb, var(--connection-partner) 30%, transparent);
+    /* Replicates text-white is implied by dark background */
+}
+
+.deleteButton:hover {
+    background-color: color-mix(in srgb, var(--connection-partner) 80%, white);
+    border-color: color-mix(in srgb, var(--connection-partner) 40%, transparent);
+}
+
+.deleteButton:focus {
+    box-shadow: 0 0 0 2px white, 0 0 0 4px var(--connection-partner);
+}
+
+.cancelButton:disabled,
+.deleteButton:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+} 

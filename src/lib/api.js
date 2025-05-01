@@ -70,13 +70,13 @@ export async function upsertUser(userData) {
 
 /**
  * Fetches all profiles for a given user FID.
- * GET /user/:fid/profiles
+ * GET /users/:fid/profiles
  */
 export async function getUserProfiles(fid) {
   if (!fid) throw new Error('FID is required to get user profiles.');
-  // TODO: Verify this endpoint exists in your API based on PAGE_BREAKDOWN.md
-  // Assuming it might be /users/:fid/profiles based on common patterns
-  return fetchApi(`/users/${fid}/profiles`); 
+  const data = await fetchApi(`/users/${fid}/profiles`); 
+  // Ensure we return the array within the response, or an empty array if data is unexpected
+  return data?.profiles || []; 
 }
 
 // --- Profile Endpoints --- 
@@ -159,4 +159,21 @@ export function getFidFromWindow() {
     return window.userFid || null;
   }
   return null;
+}
+
+// Creates a user if they don't exist, or updates their info
+export async function ensureUserExists(userData) {
+    const { fid, display_name, pfp_url } = userData;
+    if (!fid) {
+        throw new Error("FID is required to ensure user exists.");
+    }
+    // POST /api/users handles create or update
+    return fetchApi('/users', {
+        method: 'POST',
+        body: JSON.stringify({ 
+            fid, 
+            display_name: display_name || `User ${fid}`, // Provide a default display name
+            avatar_url: pfp_url // Pass the avatar URL
+        }), 
+    });
 } 

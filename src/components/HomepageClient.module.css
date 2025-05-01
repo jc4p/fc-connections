@@ -1,0 +1,135 @@
+/* Inherit section styles from Homepage.module.css where possible */
+/* We can compose or duplicate if needed */
+
+.section {
+    /* Reuse styles from Homepage.module.css? Or define specific ones */
+    margin-bottom: 2.5rem;
+    padding: 1.5rem;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.sectionTitle {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--brand-secondary);
+    border-bottom: 1px solid var(--gray-200);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.myProfilesSection {
+    /* Specific overrides for this section if needed */
+}
+
+.profileStatusList {
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: 1.5rem; /* Add space before manage link */
+}
+
+.profileStatusList li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px dashed var(--gray-200);
+}
+
+.profileStatusList li:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.profileTypeName {
+    font-weight: 500;
+}
+
+/* Reuse link colors from Homepage.module.css or globals */
+.partnerLink {
+    color: var(--connection-partner);
+}
+.friendLink {
+    color: var(--connection-friend);
+}
+.jobLink {
+    color: var(--connection-job);
+}
+
+.profileActionLink {
+    font-weight: 500;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+}
+
+.profileActionLink:hover {
+    background-color: var(--gray-100);
+    text-decoration: none;
+}
+
+.manageLink {
+    /* Reuse styles from Homepage.module.css manageLink */
+    display: inline-block;
+    /* margin-top: 1rem; (handled by list margin) */
+    padding: 0.6rem 1.2rem;
+    background-color: white;
+    color: var(--gray-700);
+    border: 1px solid var(--gray-300);
+    border-radius: 6px;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.manageLink:hover {
+    background-color: var(--gray-100);
+    text-decoration: none;
+}
+
+/* PFP Section Styles */
+.pfpSection {
+    position: absolute; /* Example: position top right */
+    top: 1rem;
+    right: 1rem;
+    display: flex;
+    align-items: center;
+    padding: 0.5rem;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 9999px; /* Pill shape */
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.pfpImage {
+    border-radius: 9999px;
+    margin-right: 0.5rem;
+    display: block;
+}
+
+.pfpDisplayName {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--brand-secondary);
+    white-space: nowrap;
+}
+
+/* Loading/Error States */
+.sectionPlaceholder,
+.pfpPlaceholder {
+    background-color: var(--gray-100);
+    color: var(--gray-500);
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.errorText {
+    color: color-mix(in srgb, var(--connection-partner) 90%, black);
+    padding: 1rem;
+    background-color: color-mix(in srgb, var(--connection-partner) 15%, transparent);
+    border: 1px solid color-mix(in srgb, var(--connection-partner) 30%, transparent);
+    border-radius: 0.375rem;
+} 

@@ -1,0 +1,91 @@
+.container {
+    max-width: 800px; /* Example max width */
+    margin: 0 auto; /* Center the content */
+    padding: 1rem 0; /* Add vertical padding */
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.header h1 {
+    font-size: 2.5rem; /* Larger heading */
+    font-weight: 700; 
+    color: var(--brand-primary); /* Use brand color for main title */
+    margin-bottom: 0.5rem;
+    /* TODO: Use Space Grotesk font here later */
+}
+
+.header p {
+    font-size: 1.125rem;
+    color: var(--gray-600);
+}
+
+.section {
+    margin-bottom: 2.5rem;
+    padding: 1.5rem;
+    background-color: #ffffff; /* White background for sections */
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.section h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--brand-secondary);
+    border-bottom: 1px solid var(--gray-200);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.connectionList {
+    list-style: none;
+    padding-left: 0;
+}
+
+.connectionList li a {
+    display: block;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+}
+
+.connectionList li a:hover {
+    background-color: var(--gray-100);
+    text-decoration: none;
+}
+
+/* Specific link colors */
+.partnerLink {
+    color: var(--connection-partner);
+}
+.friendLink {
+    color: var(--connection-friend);
+}
+.jobLink {
+    color: var(--connection-job);
+}
+
+.myProfilesSection .manageLink {
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 0.6rem 1.2rem;
+    /* Use secondary button style from globals? */
+    background-color: white;
+    color: var(--gray-700);
+    border: 1px solid var(--gray-300);
+    border-radius: 6px;
+    font-weight: 500;
+}
+
+.myProfilesSection .manageLink:hover {
+    background-color: var(--gray-100);
+    text-decoration: none;
+}
+
+.placeholderText {
+    color: var(--gray-500);
+    font-style: italic;
+} 

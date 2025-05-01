@@ -1,0 +1,105 @@
+.fieldWrapper {
+    margin-bottom: 1rem; /* Replaces mb-4 */
+}
+
+.label {
+    display: block;
+    font-size: 0.875rem; /* Replaces text-sm */
+    font-weight: 500; /* Replaces font-medium */
+    color: var(--gray-700);
+    margin-bottom: 0.25rem; /* Replaces implicit label margin */
+}
+
+.inputBase {
+    display: block;
+    width: 100%;
+    padding: 0.5rem 0.75rem; /* Replaces px-3 py-2 */
+    border: 1px solid var(--gray-300);
+    border-radius: 0.375rem; /* Replaces rounded-md */
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); /* Replaces shadow-sm */
+    font-size: 0.875rem; /* Replaces sm:text-sm */
+    margin-top: 0.25rem; /* Replaces mt-1 */
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.inputBase:focus {
+    outline: none; /* Replaces focus:outline-none */
+    border-color: var(--brand-primary); /* Replaces focus:border-indigo-500 */
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-primary) 25%, transparent); /* Replaces focus:ring-indigo-500 approximation */
+}
+
+/* Specific input types inherit base */
+.textInput {
+    composes: inputBase;
+}
+
+.textArea {
+    composes: inputBase;
+}
+
+.select {
+    composes: inputBase;
+    background-color: white; /* Replaces bg-white */
+    /* Add dropdown arrow styling if needed */
+}
+
+.helperText {
+    margin-top: 0.25rem; /* Replaces mt-1 */
+    font-size: 0.75rem; /* Replaces text-xs */
+    color: var(--gray-500);
+}
+
+.loadingText,
+.errorText,
+.warningText {
+    padding: 1rem;
+    border-radius: 0.375rem;
+    margin-bottom: 1rem;
+}
+
+.loadingText {
+    background-color: var(--gray-100);
+    color: var(--gray-700);
+    /* TODO: Replace with skeleton loader */
+}
+
+.errorText {
+    background-color: color-mix(in srgb, var(--connection-partner) 15%, transparent);
+    color: color-mix(in srgb, var(--connection-partner) 90%, black);
+    border: 1px solid color-mix(in srgb, var(--connection-partner) 30%, transparent);
+}
+
+.warningText {
+    background-color: color-mix(in srgb, orange 15%, transparent);
+    color: color-mix(in srgb, orange 90%, black);
+    border: 1px solid color-mix(in srgb, orange 30%, transparent);
+}
+
+.submitButton {
+    display: inline-flex; /* Replaces inline-flex */
+    justify-content: center; /* Replaces justify-center */
+    padding: 0.5rem 1rem; /* Replaces py-2 px-4 */
+    border: 1px solid transparent; /* Replaces border border-transparent */
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); /* Replaces shadow-sm */
+    font-size: 0.875rem; /* Replaces text-sm */
+    font-weight: 500; /* Replaces font-medium */
+    border-radius: 0.375rem; /* Replaces rounded-md */
+    color: white; /* Replaces text-white */
+    background-color: var(--brand-primary); /* Replaces bg-indigo-600 */
+    transition: background-color 0.2s ease;
+}
+
+.submitButton:hover {
+    background-color: color-mix(in srgb, var(--brand-primary) 90%, black); /* Replaces hover:bg-indigo-700 */
+}
+
+.submitButton:focus {
+    outline: 2px solid transparent; /* Replaces focus:outline-none */
+    outline-offset: 2px; /* Replaces focus:ring-offset-2 */
+    box-shadow: 0 0 0 2px white, 0 0 0 4px var(--brand-primary); /* Replaces focus:ring-2 focus:ring-indigo-500 */
+}
+
+.submitButton:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+} 

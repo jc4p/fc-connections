@@ -1,4 +1,5 @@
 import { Inter } from "next/font/google";
+import { FrameProvider } from "@/context/FrameContext";
 import "./globals.css";
 import { FrameInit } from "@/components/FrameInit";
 
@@ -14,10 +15,11 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <body className={`${inter.variable} font-sans`}>
-        {children}
-        <FrameInit />
+    <html lang="en" className={inter.variable}>
+      <body>
+        <FrameProvider>
+          {children}
+        </FrameProvider>
       </body>
     </html>
   );

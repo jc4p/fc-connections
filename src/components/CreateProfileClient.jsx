@@ -2,51 +2,50 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { createProfile, getFidFromWindow } from '@/lib/api';
-// import DynamicForm from '@/components/DynamicForm'; // Your form component
+import { createProfile } from '@/lib/api';
+import { useFrame } from '@/context/FrameContext'; // Import the hook
+import DynamicProfileForm from './profiles/DynamicProfileForm';
+import styles from './CreateProfileClient.module.css'; // Import CSS Module
 
-export default function CreateProfileClient({ profileType, fieldDefinitions }) {
+export default function CreateProfileClient({ profileType }) {
   const router = useRouter();
-  const [fid, setFid] = useState(null);
-  const [error, setError] = useState(null);
+  // Get FID state from context
+  const { fid, isLoading: isFrameLoading, error: frameError } = useFrame();
+  
+  // Local state for submission
+  const [submitError, setSubmitError] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Get FID on component mount (client-side)
-  useEffect(() => {
-    const userFid = getFidFromWindow();
-    if (!userFid) {
-      // Handle error: user might not be in frame context or FID not loaded yet
-      setError('User Farcaster ID not found. Cannot create profile. Please ensure you are using this within a Farcaster frame.');
-    } else {
-      setFid(userFid);
-    }
-  }, []);
-
   const handleSubmit = async (formData) => {
+    // Ensure FID is available before attempting submission
     if (!fid) {
-        setError('User FID is missing. Cannot submit.');
+        setSubmitError('User FID is not available. Cannot submit.');
         return;
     }
-    if (isSubmitting) return; // Prevent double submission
+    if (isSubmitting) return;
 
-    console.log('Submitting new profile via Client Component:', formData);
-    setError(null);
+    console.log('Submitting new profile:', formData);
+    setSubmitError(null);
     setIsSubmitting(true);
 
     try {
-      // Structure payload correctly for your API
-      const payload = { 
-        fid, 
-        type: profileType, 
-        fields: formData 
-        // Add any other required base fields 
-      }; 
-      await createProfile(payload);
+      const payload = {
+        fid,
+        type: profileType,
+        status: 'active',
+        profile_field_values: Object.entries(formData).map(([key, value]) => ({ 
+            field_key: key, 
+            value: String(value)
+        }))
+      };
+      console.log("Submitting Payload:", payload);
+      const createdProfile = await createProfile(payload);
       alert('Profile created successfully!');
-      // Redirect to My Profiles page on success
-      router.push('/my-profiles'); 
+      router.push(`/profile/${createdProfile.id}`);
+
     } catch (err) {
-      setError(err.message || 'Failed to create profile.');
+      const errorMessage = err.response?.data?.error || err.message || 'Failed to create profile.';
+      setSubmitError(errorMessage);
       console.error("CreateProfileClient Submit Error:", err);
     } finally {
        setIsSubmitting(false);
@@ -54,47 +53,42 @@ export default function CreateProfileClient({ profileType, fieldDefinitions }) {
   };
 
   const handleCancel = () => {
-    // Ask for confirmation before navigating away
     if (window.confirm('Are you sure you want to cancel? Any unsaved changes will be lost.')) {
-      router.push('/'); // Redirect to homepage or appropriate page
+      router.push('/');
     }
   };
 
-  // Handle initial FID loading state or error
-  if (error) return <p style={{ color: 'red' }}>Error: {error}</p>;
-  // Optional: Show loading state while FID is being fetched?
-  // if (fid === null) return <p>Loading user information...</p>;
+  // Handle frame loading/error states
+  if (isFrameLoading) {
+      return <p className={styles.loadingText}>Waiting for Farcaster user...</p>;
+  }
+  if (frameError) {
+      return <p className={styles.errorText}>Error: {frameError}</p>;
+  }
+  if (!fid) {
+       return <p className={styles.errorText}>Error: Could not determine Farcaster user FID.</p>;
+  }
 
+  // Render form once FID is ready
   return (
-    <div>
-      {/* Placeholder for DynamicForm implementation */}
-      {/* 
-      <DynamicForm 
-        fields={fieldDefinitions} 
-        onSubmit={handleSubmit} 
-        onCancel={handleCancel} 
-        isSubmitting={isSubmitting}
-        submitText="Create Profile"
-        cancelText="Cancel"
-      /> 
-      */}
-      
-      <p>Dynamic Form Placeholder (Client)</p>
-      <p>Fields:</p>
-      <pre>{JSON.stringify(fieldDefinitions, null, 2)}</pre>
-      {fid ? <p>User FID: {fid}</p> : <p>Waiting for User FID...</p>}
-      
-      {/* Simulate form actions */} 
-      <div style={{ marginTop: '1rem' }}>
-        <button onClick={() => handleSubmit({ testField: 'client submit data' })} disabled={isSubmitting || !fid}>
-          {isSubmitting ? 'Submitting...' : 'Simulate Submit'}
-        </button>
-        <button onClick={handleCancel} style={{ marginLeft: '1rem' }} disabled={isSubmitting}>
-          Simulate Cancel
-        </button>
-      </div>
-      
-      {error && <p style={{ color: 'red', marginTop: '1rem' }}>Submit Error: {error}</p>} 
+    <div className={styles.container}> 
+      <DynamicProfileForm
+        profileType={profileType}
+        onSubmit={handleSubmit}
+        submitButtonText={isSubmitting ? 'Creating...' : 'Create Profile'}
+        isSubmitting={isSubmitting} // Pass submitting state to disable form button
+      />
+
+      <button 
+        onClick={handleCancel} 
+        disabled={isSubmitting}
+        className={styles.cancelButton}
+      >
+          Cancel
+      </button>
+
+      {/* Display submission error */} 
+      {submitError && <p className={styles.submitErrorText}>Submit Error: {submitError}</p>} 
     </div>
   );
 } 
