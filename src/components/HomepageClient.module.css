@@ -1,135 +1,240 @@
-/* Inherit section styles from Homepage.module.css where possible */
-/* We can compose or duplicate if needed */
+/* HomepageClient - Updated to match new design system */
 
-.section {
-    /* Reuse styles from Homepage.module.css? Or define specific ones */
-    margin-bottom: 2.5rem;
-    padding: 1.5rem;
-    background-color: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+.container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--brand-background);
+  font-family: var(--font-primary);
+  justify-content: space-between;
+  overflow-x: hidden;
 }
 
+.main {
+  flex: 1;
+  padding-bottom: 1rem;
+}
+
+/* Header */
+.header {
+  display: flex;
+  align-items: center;
+  background-color: var(--brand-background);
+  padding: 1rem;
+  padding-bottom: 0.5rem;
+  justify-content: space-between;
+}
+
+.pageTitle {
+  color: var(--text-primary);
+  font-size: 1.125rem;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  flex: 1;
+  text-align: center;
+  padding-left: 3rem;
+}
+
+.addButton {
+  display: flex;
+  width: 3rem;
+  height: 3rem;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  color: var(--text-primary);
+  border-radius: 9999px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.addButton:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Categories Section */
 .sectionTitle {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: var(--brand-secondary);
-    border-bottom: 1px solid var(--gray-200);
-    padding-bottom: 0.5rem;
-    margin-bottom: 1rem;
+  color: var(--text-primary);
+  font-size: 1.375rem;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  padding: 1rem;
+  padding-bottom: 0.75rem;
+  padding-top: 1.25rem;
+  margin: 0;
 }
 
-.myProfilesSection {
-    /* Specific overrides for this section if needed */
+.categoriesContainer {
+  display: flex;
+  flex-direction: column;
 }
 
-.profileStatusList {
-    list-style: none;
-    padding-left: 0;
-    margin-bottom: 1.5rem; /* Add space before manage link */
+.categoryCard {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background-color: var(--brand-background);
+  padding: 1rem;
+  min-height: 4.5rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  justify-content: space-between;
+  text-decoration: none;
+  color: inherit;
+  transition: background-color 0.2s ease;
 }
 
-.profileStatusList li {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.75rem;
-    padding-bottom: 0.75rem;
-    border-bottom: 1px dashed var(--gray-200);
+.categoryCard:hover {
+  background-color: rgba(0, 0, 0, 0.02);
 }
 
-.profileStatusList li:last-child {
-    margin-bottom: 0;
-    padding-bottom: 0;
-    border-bottom: none;
+.categoryIcon {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  border-radius: 0.5rem;
+  width: 3.5rem;
+  height: 3.5rem;
+  flex-shrink: 0;
+  background-color: var(--gray-200);
 }
 
-.profileTypeName {
-    font-weight: 500;
+.categoryContent {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex: 1;
 }
 
-/* Reuse link colors from Homepage.module.css or globals */
-.partnerLink {
-    color: var(--connection-partner);
-}
-.friendLink {
-    color: var(--connection-friend);
-}
-.jobLink {
-    color: var(--connection-job);
-}
-
-.profileActionLink {
-    font-weight: 500;
-    padding: 0.25rem 0.5rem;
-    border-radius: 4px;
-    transition: background-color 0.2s ease;
+.categoryTitle {
+  color: var(--text-primary);
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.5;
+  margin: 0;
+  margin-bottom: 0.125rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.profileActionLink:hover {
-    background-color: var(--gray-100);
-    text-decoration: none;
+.categoryDescription {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.5;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
-.manageLink {
-    /* Reuse styles from Homepage.module.css manageLink */
-    display: inline-block;
-    /* margin-top: 1rem; (handled by list margin) */
-    padding: 0.6rem 1.2rem;
-    background-color: white;
-    color: var(--gray-700);
-    border: 1px solid var(--gray-300);
-    border-radius: 6px;
-    font-weight: 500;
-    text-decoration: none;
+.categoryArrow {
+  flex-shrink: 0;
+  color: var(--text-primary);
+  display: flex;
+  width: 1.75rem;
+  height: 1.75rem;
+  align-items: center;
+  justify-content: center;
 }
 
-.manageLink:hover {
-    background-color: var(--gray-100);
-    text-decoration: none;
+/* Bottom Navigation */
+.bottomNav {
+  display: flex;
+  gap: 0.5rem;
+  border-top: 1px solid var(--border-light);
+  background-color: var(--brand-background);
+  padding: 1rem;
+  padding-bottom: 0.75rem;
+  padding-top: 0.5rem;
 }
 
-/* PFP Section Styles */
-.pfpSection {
-    position: absolute; /* Example: position top right */
-    top: 1rem;
-    right: 1rem;
-    display: flex;
-    align-items: center;
-    padding: 0.5rem;
-    background-color: rgba(255, 255, 255, 0.8);
-    border-radius: 9999px; /* Pill shape */
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+.bottomNav::after {
+  content: '';
+  height: 1.25rem;
+  background-color: var(--brand-background);
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+  left: 0;
 }
 
-.pfpImage {
-    border-radius: 9999px;
-    margin-right: 0.5rem;
-    display: block;
+.navItem,
+.navItemInactive {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.25rem;
+  border-radius: 9999px;
+  text-decoration: none;
+  padding: 0.5rem 0;
 }
 
-.pfpDisplayName {
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: var(--brand-secondary);
-    white-space: nowrap;
+.navItem {
+  color: var(--text-primary);
+}
+
+.navItemInactive {
+  color: var(--nav-inactive);
+}
+
+.navItem svg,
+.navItemInactive svg {
+  height: 2rem;
+  width: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Loading/Error States */
 .sectionPlaceholder,
 .pfpPlaceholder {
-    background-color: var(--gray-100);
-    color: var(--gray-500);
-    padding: 1rem;
-    border-radius: 8px;
-    margin-bottom: 1rem;
-    text-align: center;
+  background-color: var(--gray-100);
+  color: var(--gray-500);
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  text-align: center;
 }
 
 .errorText {
-    color: color-mix(in srgb, var(--connection-partner) 90%, black);
-    padding: 1rem;
-    background-color: color-mix(in srgb, var(--connection-partner) 15%, transparent);
-    border: 1px solid color-mix(in srgb, var(--connection-partner) 30%, transparent);
-    border-radius: 0.375rem;
-} 
+  color: color-mix(in srgb, var(--connection-partner) 90%, black);
+  padding: 1rem;
+  background-color: color-mix(in srgb, var(--connection-partner) 15%, transparent);
+  border: 1px solid color-mix(in srgb, var(--connection-partner) 30%, transparent);
+  border-radius: 0.375rem;
+}
+
+/* Legacy styles for backward compatibility */
+.pfpSection {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 9999px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.pfpImage {
+  border-radius: 9999px;
+  margin-right: 0.5rem;
+  display: block;
+}
+
+.pfpDisplayName {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--brand-secondary);
+  white-space: nowrap;
+}

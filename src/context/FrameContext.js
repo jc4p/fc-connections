@@ -19,14 +19,41 @@ const FrameContext = createContext({
 
 // Create the Provider component
 export function FrameProvider({ children }) {
-  const [fid, setFid] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  // Initialize with existing FID if available
+  const [fid, setFid] = useState(() => {
+    if (typeof window !== 'undefined' && window.userFid) {
+      return window.userFid;
+    }
+    return null;
+  });
+  
+  // Only set loading to true if we don't already have an FID
+  const [isLoading, setIsLoading] = useState(() => {
+    if (typeof window !== 'undefined' && window.userFid) {
+      return false;
+    }
+    return true;
+  });
+  
   const [error, setError] = useState(null);
 
   useEffect(() => {
     let isMounted = true; // Prevent state updates on unmounted component
 
     const setupFrame = async () => {
+        // Check if we already have FID stored (either in state or window)
+        const existingFid = fid || (typeof window !== 'undefined' ? window.userFid : null);
+        
+        if (existingFid) {
+            console.log("FrameProvider: FID already available, skipping initialization:", existingFid);
+            if (isMounted && !fid) {
+                setFid(existingFid);
+                setIsLoading(false);
+                setError(null);
+            }
+            return;
+        }
+
         setIsLoading(true);
         setError(null);
         console.log("FrameProvider: Initializing frame...");

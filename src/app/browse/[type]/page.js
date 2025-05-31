@@ -34,13 +34,8 @@ export default async function BrowsePage({ params, searchParams }) {
   }
 
   return (
-    <div>
-      {/* Basic structure rendered on server */}
-      {/* <CustomBackButton href="/" /> // This might need to be client-side or use next/link */}
-      <a href="/">Back (Server Link)</a>
-      <h1>{pageTitles[profileType] || 'Browse Profiles'}</h1>
-
-      {/* Render the Client Component and pass initial data */}
+    <main>
+      {/* Render the Client Component which handles its own header and navigation */}
       <BrowseClient
         profileType={profileType}
         initialProfiles={initialProfiles}
@@ -48,6 +43,6 @@ export default async function BrowsePage({ params, searchParams }) {
         initialHasMore={initialHasMore}
         initialFilters={initialFilters} 
       /> 
-    </div>
+    </main>
   );
 } 

@@ -34,22 +34,12 @@ export default async function ProfileDetailPage({ params }) {
   // TODO: Record profile view (maybe via a separate Route Handler or Server Action called from client?)
   
   return (
-    <div>
-      {/* <CustomBackButton href={`/browse/${initialProfile?.type || ''}`} /> */}
-      <a href={initialProfile ? `/browse/${initialProfile.type}` : '/'}>Back (Server Link)</a>
-      
-      {/* Render Client Component if profile loaded, otherwise show error */}
-      {initialProfile ? (
-        // Render the client component, passing the fetched profile
-        <ProfileDetailClient 
-           initialProfile={initialProfile} 
-        /> 
-      ) : (
-        <div>
-          <h1>Profile Error</h1>
-          <p style={{ color: 'red' }}>{initialError || 'Could not load profile data.'}</p>
-        </div>
-      )}
-    </div>
+    <main>
+      {/* Render Client Component which handles its own header and navigation */}
+      <ProfileDetailClient 
+         initialProfile={initialProfile}
+         initialError={initialError}
+      /> 
+    </main>
   );
 } 

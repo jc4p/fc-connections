@@ -18,18 +18,33 @@ export default function CreateProfilePage({ params }) {
   }
 
   return (
-    <div>
-      {/* <CustomBackButton href="/" /> */}
-      <a href="/">Cancel (Server Link)</a>
-      <h1>{pageTitles[profileType] || 'Create Profile'}</h1>
-
+    <main>
       {initialError ? (
-        <p style={{ color: 'red' }}>Error loading page: {initialError}</p>
+        <div style={{ 
+          minHeight: '100vh', 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center',
+          backgroundColor: '#fbf9f9',
+          padding: '1rem'
+        }}>
+          <div style={{
+            color: '#d32f2f',
+            textAlign: 'center',
+            backgroundColor: 'rgba(211, 47, 47, 0.1)',
+            border: '1px solid rgba(211, 47, 47, 0.3)',
+            borderRadius: '0.5rem',
+            padding: '2rem'
+          }}>
+            <h2>Page Error</h2>
+            <p>Error loading page: {initialError}</p>
+          </div>
+        </div>
       ) : (
         <CreateProfileClient 
            profileType={profileType}
         />
       )}
-    </div>
+    </main>
   );
 } 

@@ -1,38 +1,144 @@
+/* CreateProfileClient - Styled to match STITCH_ENTRY.html design */
+
 .container {
-    /* Add padding or margins if needed */
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--brand-background);
+  font-family: var(--font-primary);
+  overflow-x: hidden;
 }
 
+.main {
+  flex: 1;
+  padding-bottom: 1rem;
+}
+
+/* Header */
+.header {
+  display: flex;
+  align-items: center;
+  background-color: var(--brand-background);
+  padding: 1rem;
+  padding-bottom: 0.5rem;
+  justify-content: space-between;
+}
+
+.closeButton {
+  color: var(--text-primary);
+  display: flex;
+  width: 3rem;
+  height: 3rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
+}
+
+.closeButton:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.closeButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pageTitle {
+  color: var(--text-primary);
+  font-size: 1.125rem;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  flex: 1;
+  text-align: center;
+  padding-right: 3rem;
+  margin: 0;
+}
+
+/* Section Titles */
+.sectionTitle {
+  color: var(--text-primary);
+  font-size: 1.125rem;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  padding: 1rem;
+  padding-bottom: 0.5rem;
+  padding-top: 1rem;
+  margin: 0;
+}
+
+/* Category Section */
+.categoryContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 1rem;
+}
+
+.categoryPill {
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.75rem;
+  border: 3px solid var(--brand-primary);
+  padding: 0.5rem 1rem;
+  height: 2.75rem;
+  color: var(--text-primary);
+  background-color: transparent;
+}
+
+/* States */
 .loadingText {
-    color: var(--gray-600);
-    padding: 1rem;
-    background-color: var(--gray-100);
-    border-radius: 0.375rem;
-    text-align: center;
+  color: var(--text-secondary);
+  padding: 2rem 1rem;
+  text-align: center;
+  font-size: 1rem;
 }
 
 .errorText {
-    color: color-mix(in srgb, var(--connection-partner) 90%, black);
-    padding: 1rem;
-    background-color: color-mix(in srgb, var(--connection-partner) 15%, transparent);
-    border: 1px solid color-mix(in srgb, var(--connection-partner) 30%, transparent);
-    border-radius: 0.375rem;
-    margin-bottom: 1rem; /* Space before form/buttons */
-}
-
-.cancelButton {
-    composes: secondary from global; /* Inherit base secondary button style */
-    display: inline-flex; 
-    justify-content: center;
-    margin-top: 1rem; /* Replicates mt-4 */
-    /* Add specific overrides if needed */
-}
-
-.cancelButton:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
+  color: color-mix(in srgb, var(--connection-partner) 90%, black);
+  padding: 1rem;
+  background-color: color-mix(in srgb, var(--connection-partner) 15%, transparent);
+  border: 1px solid color-mix(in srgb, var(--connection-partner) 30%, transparent);
+  border-radius: 0.375rem;
+  margin: 1rem;
 }
 
 .submitErrorText {
-    composes: errorText; /* Reuse error text styling */
-    margin-top: 1rem; /* Replicates mt-4 */
-} 
+  color: color-mix(in srgb, var(--connection-partner) 90%, black);
+  padding: 1rem;
+  background-color: color-mix(in srgb, var(--connection-partner) 15%, transparent);
+  border: 1px solid color-mix(in srgb, var(--connection-partner) 30%, transparent);
+  border-radius: 0.375rem;
+  margin: 1rem;
+}
+
+/* Legacy styles for compatibility */
+.cancelButton {
+  background-color: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-medium);
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  margin: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cancelButton:hover {
+  background-color: var(--gray-100);
+}
+
+.cancelButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

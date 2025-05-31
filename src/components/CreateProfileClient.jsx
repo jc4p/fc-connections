@@ -54,7 +54,7 @@ export default function CreateProfileClient({ profileType }) {
 
   const handleCancel = () => {
     if (window.confirm('Are you sure you want to cancel? Any unsaved changes will be lost.')) {
-      router.push('/');
+      router.back();
     }
   };
 
@@ -69,26 +69,41 @@ export default function CreateProfileClient({ profileType }) {
        return <p className={styles.errorText}>Error: Could not determine Farcaster user FID.</p>;
   }
 
+  const getPageTitle = () => {
+    switch (profileType) {
+      case 'partner': return 'Create Partner Listing';
+      case 'friend': return 'Create Friend Listing'; 
+      case 'job': return 'Create Job Listing';
+      default: return 'Create Listing';
+    }
+  };
+
   // Render form once FID is ready
   return (
-    <div className={styles.container}> 
-      <DynamicProfileForm
-        profileType={profileType}
-        onSubmit={handleSubmit}
-        submitButtonText={isSubmitting ? 'Creating...' : 'Create Profile'}
-        isSubmitting={isSubmitting} // Pass submitting state to disable form button
-      />
+    <div className={styles.container}>
+      <div className={styles.main}>
+        {/* Header */}
+        <div className={styles.header}>
+          <button className={styles.closeButton} onClick={handleCancel} disabled={isSubmitting}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256">
+              <path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"></path>
+            </svg>
+          </button>
+          <h2 className={styles.pageTitle}>{getPageTitle()}</h2>
+        </div>
 
-      <button 
-        onClick={handleCancel} 
-        disabled={isSubmitting}
-        className={styles.cancelButton}
-      >
-          Cancel
-      </button>
+        {/* Form Section */}
+        <h3 className={styles.sectionTitle}>Prompts</h3>
+        <DynamicProfileForm
+          profileType={profileType}
+          onSubmit={handleSubmit}
+          submitButtonText={isSubmitting ? 'Creating...' : 'Next'}
+          isSubmitting={isSubmitting}
+        />
 
-      {/* Display submission error */} 
-      {submitError && <p className={styles.submitErrorText}>Submit Error: {submitError}</p>} 
+        {/* Display submission error */} 
+        {submitError && <div className={styles.submitErrorText}>Submit Error: {submitError}</div>} 
+      </div>
     </div>
   );
 } 

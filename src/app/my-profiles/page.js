@@ -6,13 +6,9 @@ export default function MyProfilesPage() {
   // No user-specific data fetching here as FID is not available server-side
 
   return (
-    <div>
-      {/* <CustomBackButton href="/" /> */}
-      <a href="/">Back (Server Link)</a>
-      <h1>My Profiles</h1>
-      
-      {/* Render the client component which will handle FID fetching and data loading */}
+    <main>
+      {/* Render the client component which handles its own header and navigation */}
       <MyProfilesClient />
-    </div>
+    </main>
   );
 }

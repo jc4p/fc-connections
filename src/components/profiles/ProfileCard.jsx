@@ -32,54 +32,34 @@ const ProfileCard = ({ profile }) => {
         summary_fields
     } = profile;
 
-    const typeSpecificClass = getCardClass(type);
-
-    // Prepare summary fields display
-    const summaryItems = summary_fields 
-        ? Object.entries(summary_fields).slice(0, 2) // Take max 2 fields
-        : [];
+    // Mock some additional info like followers and mutuals for the design
+    const mockStats = {
+        age: Math.floor(Math.random() * 15) + 20, // 20-35
+        followers: Math.floor(Math.random() * 2000) + 100, // 100-2100
+        mutuals: Math.floor(Math.random() * 100) + 5 // 5-105
+    };
 
     return (
         <Link href={`/profile/${id}`} className={styles.cardLink}>
-            {/* Combine base card class with type-specific border class */}
-            <div className={`${styles.card} ${typeSpecificClass}`}>
-                <div className={styles.header}>
-                    <div className={styles.pfpWrapper}>
-                        <Image 
-                            src={user_pfp_url || 'https://via.placeholder.com/40'} // Placeholder PFP
-                            alt={user_display_name || 'User PFP'}
-                            width={40}
-                            height={40}
-                            className={styles.pfp} // Apply PFP style
-                            unoptimized // Add this prop
-                        />
-                    </div>
-                    <div className={styles.userInfo}>
-                        <p className={styles.displayName}>
-                            {user_display_name || `User ${user_fid}`}
-                        </p>
-                         <p className={styles.fidText}>
-                            Farcaster ID: {user_fid || 'N/A'}
-                        </p>
-                    </div>
+            <div className={styles.card}>
+                <div className={styles.pfpWrapper}>
+                    <Image 
+                        src={user_pfp_url || 'https://via.placeholder.com/56'} // Larger PFP to match design
+                        alt={user_display_name || 'User PFP'}
+                        width={56}
+                        height={56}
+                        className={styles.pfp}
+                        unoptimized
+                    />
                 </div>
-                
-                {/* Key Profile Fields Display */} 
-                {summaryItems.length > 0 && (
-                    <div className={styles.fields}>
-                        {summaryItems.map(([key, value]) => (
-                            <p key={key}>
-                                {/* TODO: Replace 'key' with a friendlier label if possible */} 
-                                <span className={styles.fieldLabel}>{key}:</span> {value}
-                            </p>
-                        ))}
-                    </div>
-                )}
-                
-                {/* Footer? e.g., Creation date */} 
-                {/* <div className="mt-2 text-xs text-gray-400">
-                    Created: {new Date(created_at).toLocaleDateString()}
-                </div> */} 
+                <div className={styles.userInfo}>
+                    <p className={styles.displayName}>
+                        {user_display_name || `User ${user_fid}`}
+                    </p>
+                    <p className={styles.userMeta}>
+                        {mockStats.age} · {mockStats.followers} followers · {mockStats.mutuals} mutuals
+                    </p>
+                </div>
             </div>
         </Link>
     );

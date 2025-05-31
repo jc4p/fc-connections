@@ -1,7 +1,4 @@
-import Link from 'next/link';
-import styles from './Homepage.module.css';
-import HomepageClient from '@/components/HomepageClient'; // Import the new client component
-// import { getUserFid } from '@/lib/api'; // API helper not needed server-side here yet
+import HomepageClient from '@/components/HomepageClient';
 
 // Define fc:frame metadata
 // TODO: Replace placeholder values with your actual frame details
@@ -44,26 +41,9 @@ export default function Home() {
   // User-specific data (like profile status) will be fetched client-side
 
   return (
-    <main className={styles.container}> 
-      <header className={styles.header}>
-        {/* TODO: Add Logo Component */}
-        <h1>FC-Connections</h1>
-        <p>Forge meaningful connections across your personal and professional life on Farcaster.</p>
-      </header>
-
-      {/* Connection Type Links */} 
-      <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>Choose Connection Type:</h2> 
-        <ul className={styles.connectionList}>
-          <li><Link href="/browse/partner" className={styles.partnerLink}>Partner Connections</Link></li>
-          <li><Link href="/browse/friend" className={styles.friendLink}>Friend Connections</Link></li>
-          <li><Link href="/browse/job" className={styles.jobLink}>Job Connections</Link></li>
-        </ul>
-      </section>
-
+    <main> 
       {/* Render Client Component for Dynamic Sections */} 
       <HomepageClient />
-
     </main>
   );
 }

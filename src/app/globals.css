@@ -1,16 +1,24 @@
 :root {
-  /* Brand Colors */
-  --brand-primary: #7A5AF8; 
-  --brand-secondary: #18181B;
-  --brand-background: #FAFAFA;
-  --brand-foreground: #18181B; /* Using secondary as default text color */
+  /* Updated Brand Colors (from new designs) */
+  --brand-primary: #dd9ba9; /* Button color from designs */
+  --brand-secondary: #181012; /* Dark text color from designs */
+  --brand-background: #fbf9f9; /* Warm background from designs */
+  --brand-foreground: #181012; /* Using secondary as default text color */
 
-  /* Connection Type Colors */
+  /* Connection Type Colors (keeping original brand guidelines) */
   --connection-partner: #FF5E7D;
   --connection-friend: #4CAF50;
   --connection-job: #2196F3;
 
-  /* Basic Grays (example) */
+  /* Design System Colors (from new mockups) */
+  --text-primary: #181012;
+  --text-secondary: #8a5c66;
+  --border-light: #f1eaeb;
+  --border-medium: #e2d4d7;
+  --input-bg: #f1eaeb;
+  --nav-inactive: #8a5c66;
+
+  /* Basic Grays */
   --gray-100: #f7fafc;
   --gray-200: #edf2f7;
   --gray-300: #e2e8f0;
@@ -21,9 +29,9 @@
   --gray-800: #2d3748;
   --gray-900: #1a202c;
 
-  /* Font Families (assuming Inter is loaded in layout.js) */
-  --font-primary: var(--font-inter), system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  /* Add --font-secondary for Space Grotesk if needed */
+  /* Font Families (Plus Jakarta Sans as primary from designs) */
+  --font-primary: var(--font-plus-jakarta-sans), "Plus Jakarta Sans", "Noto Sans", system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  --font-secondary: "Space Grotesk", var(--font-primary);
 
   /* Default Background/Foreground */
   --background: var(--brand-background);
@@ -51,7 +59,7 @@ body {
   font-family: var(--font-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  padding: 1rem; /* Add some base padding */
+  padding: 0; /* Remove padding for full-screen design */
 }
 
 * {
