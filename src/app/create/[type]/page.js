@@ -8,8 +8,8 @@ const pageTitles = {
 };
 
 // Make component synchronous
-export default function CreateProfilePage({ params }) {
-  const profileType = params.type;
+export default async function CreateProfilePage({ params }) {
+  const profileType = (await params).type;
   let initialError = null;
 
   // Validate profile type only

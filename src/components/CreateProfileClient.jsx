@@ -35,12 +35,13 @@ export default function CreateProfileClient({ profileType }) {
         status: 'active',
         profile_field_values: Object.entries(formData).map(([key, value]) => ({ 
             field_key: key, 
-            value: String(value)
+            // Handle array values for multi_select fields
+            value: Array.isArray(value) ? JSON.stringify(value) : String(value)
         }))
       };
       console.log("Submitting Payload:", payload);
       const createdProfile = await createProfile(payload);
-      alert('Profile created successfully!');
+      // Navigate directly without alert (alerts blocked in frame context)
       router.push(`/profile/${createdProfile.id}`);
 
     } catch (err) {
@@ -53,9 +54,8 @@ export default function CreateProfileClient({ profileType }) {
   };
 
   const handleCancel = () => {
-    if (window.confirm('Are you sure you want to cancel? Any unsaved changes will be lost.')) {
-      router.back();
-    }
+    // Direct navigation without confirmation dialog (alerts blocked in frame context)
+    router.push('/');
   };
 
   // Handle frame loading/error states

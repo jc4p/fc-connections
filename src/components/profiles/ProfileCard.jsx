@@ -18,30 +18,113 @@ const getCardClass = (type) => {
 const ProfileCard = ({ profile }) => {
     if (!profile) return null;
 
-    // Destructure needed fields (adjust based on actual API response for GET /api/profiles)
+    // Destructure needed fields based on profiles list API response structure
     const {
         id,
-        type,
-        status,
+        profile_type: type,
+        is_active: status,
         created_at,
-        user_fid, // Assuming API provides this
-        user_pfp_url, // Assuming API provides this or we fetch separately
-        user_display_name, // Assuming API provides this
-        // TODO: Get actual key fields from profile object structure
-        // Example assuming they are in profile.summary_fields = { key1: value1, key2: value2 }
-        summary_fields
+        fid: user_fid,
+        avatar_url: user_pfp_url,
+        display_name: user_display_name,
+        // Now includes profile_field_values from the updated API
+        profile_field_values
     } = profile;
 
-    // Mock some additional info like followers and mutuals for the design
-    const mockStats = {
-        age: Math.floor(Math.random() * 15) + 20, // 20-35
-        followers: Math.floor(Math.random() * 2000) + 100, // 100-2100
-        mutuals: Math.floor(Math.random() * 100) + 5 // 5-105
+    // Convert field values array to object for easier access (if available)
+    const fieldValues = profile_field_values ? 
+        profile_field_values.reduce((acc, field) => {
+            acc[field.field_key] = field.value;
+            return acc;
+        }, {}) : {};
+
+    // Get actual data from profile fields
+    const getDisplayStats = () => {
+        const stats = [];
+        
+        // Try to get age from profile data (for partner profiles)
+        if (type === 'partner') {
+            const age = fieldValues['age'];
+            if (age && !isNaN(age)) {
+                stats.push(`${age} years old`);
+            }
+        }
+        
+        // Try to get location
+        const location = fieldValues['location'];
+        if (location && typeof location === 'string' && location.length < 30) {
+            stats.push(location);
+        }
+        
+        // Add view count if significant
+        if (profile.view_count > 0) {
+            stats.push(`${profile.view_count} views`);
+        }
+        
+        return stats.length > 0 ? stats.join(' · ') : '';
+    };
+
+    // Get preview text from actual field values
+    const getPreviewText = () => {
+        if (profile_field_values && profile_field_values.length > 0) {
+            // For partner profiles, prioritize "seeking_orientation" (looking for...)
+            if (type === 'partner') {
+                const seekingOrientation = fieldValues['seeking_orientation'];
+                if (seekingOrientation && typeof seekingOrientation === 'string') {
+                    return `Looking for ${seekingOrientation}`;
+                }
+            }
+            
+            // For friend profiles, prioritize "friendship_seeking" (looking for...)
+            if (type === 'friend') {
+                const friendshipSeeking = fieldValues['friendship_seeking'];
+                if (friendshipSeeking && typeof friendshipSeeking === 'string') {
+                    return `Looking for ${friendshipSeeking}`;
+                }
+            }
+            
+            // Try to find good preview fields for each type
+            const previewFieldOrder = {
+                'partner': ['heart_access', 'ideal_sunday', 'passion_talk'],
+                'friend': ['friendship_offer', 'perfect_hangout', 'friend_role', 'friendship_seeking'],
+                'job': ['professional_summary', 'current_focus', 'career_motivation', 'learning_interest']
+            };
+            
+            const fieldsToTry = previewFieldOrder[type] || [];
+            
+            // Try preferred fields for this profile type
+            for (const fieldKey of fieldsToTry) {
+                const value = fieldValues[fieldKey];
+                if (value && typeof value === 'string' && value.length > 15 && value.length < 120) {
+                    return value;
+                }
+            }
+            
+            // If no preferred fields found, try any non-essential field
+            const availableFields = Object.entries(fieldValues);
+            for (const [key, value] of availableFields) {
+                if (value && typeof value === 'string' && value.length > 15 && value.length < 120) {
+                    return value;
+                }
+            }
+            
+            // Fallback to any field
+            const [key, value] = availableFields[0];
+            return value || 'Click to view full profile...';
+        }
+        
+        // Fallback if no field values
+        const typeMessages = {
+            'partner': 'Looking for meaningful connections...',
+            'friend': 'Open to new friendships...',
+            'job': 'Professional networking...'
+        };
+        return typeMessages[type] || 'Click to view profile...';
     };
 
     return (
         <Link href={`/profile/${id}`} className={styles.cardLink}>
-            <div className={styles.card}>
+            <div className={`${styles.card} ${getCardClass(type)}`}>
                 <div className={styles.pfpWrapper}>
                     <Image 
                         src={user_pfp_url || 'https://via.placeholder.com/56'} // Larger PFP to match design
@@ -57,7 +140,10 @@ const ProfileCard = ({ profile }) => {
                         {user_display_name || `User ${user_fid}`}
                     </p>
                     <p className={styles.userMeta}>
-                        {mockStats.age} · {mockStats.followers} followers · {mockStats.mutuals} mutuals
+                        {getDisplayStats()}
+                    </p>
+                    <p className={styles.previewText}>
+                        {getPreviewText()}
                     </p>
                 </div>
             </div>

@@ -2,12 +2,104 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import styles from './ProfileDetailClient.module.css';
 
 export default function ProfileDetailClient({ initialProfile, initialError }) {
   const router = useRouter();
   const [profile] = useState(initialProfile);
   const [error] = useState(initialError);
+  
+  // Convert field values array to object for easier access
+  const fieldValues = profile?.profile_field_values ? 
+    profile.profile_field_values.reduce((acc, field) => {
+      acc[field.field_key] = field.value;
+      return acc;
+    }, {}) : {};
+  
+  // Get field definition with label
+  const getFieldWithLabel = (fieldKey) => {
+    const field = profile?.profile_field_values?.find(f => f.field_key === fieldKey);
+    return field || null;
+  };
+  
+  // Categorize fields by how they should be rendered
+  const metadataFields = ['age', 'location', 'gender_identity', 'seeking_orientation', 'is_employer'];
+  const conversationalFields = [
+    'ideal_sunday', 'heart_access', 'passion_talk', 'trust_signal', 'friendship_offer', 
+    'friendship_seeking', 'friend_role', 'perfect_hangout', 'professional_summary', 
+    'current_focus', 'career_motivation', 'learning_interest'
+  ];
+  const choiceFields = [
+    'conflict_style', 'love_language_give', 'love_language_receive', 'communication_style', 
+    'support_preference', 'humor_style', 'availability_style', 'work_environment'
+  ];
+  const sliderFields = ['social_battery', 'new_experience_openness'];
+  
+  // Get metadata for badges and stats
+  const getMetadataTags = () => {
+    const tags = [];
+    
+    if (fieldValues['is_employer'] === 'true') {
+      tags.push({ text: 'Employer', color: 'var(--connection-job)' });
+    }
+    
+    if (fieldValues['gender_identity']) {
+      tags.push({ text: fieldValues['gender_identity'], color: 'var(--text-secondary)' });
+    }
+    
+    return tags;
+  };
+  
+  // Get seeking/looking for info
+  const getSeekingInfo = () => {
+    if (profile.profile_type === 'partner' && fieldValues['seeking_orientation']) {
+      return `Looking for ${fieldValues['seeking_orientation']}`;
+    }
+    if (profile.profile_type === 'friend' && fieldValues['friendship_seeking']) {
+      return fieldValues['friendship_seeking'];
+    }
+    return null;
+  };
+  
+  // Get conversational Q&A fields
+  const getConversationalFields = () => {
+    return profile?.profile_field_values?.filter(field => 
+      conversationalFields.includes(field.field_key) && field.value
+    ) || [];
+  };
+  
+  // Get choice/preference fields
+  const getChoiceFields = () => {
+    return profile?.profile_field_values?.filter(field => 
+      choiceFields.includes(field.field_key) && field.value
+    ) || [];
+  };
+  
+  // Get slider fields with visual representation
+  const getSliderFields = () => {
+    return profile?.profile_field_values?.filter(field => 
+      sliderFields.includes(field.field_key) && field.value
+    ) || [];
+  };
+  
+  // Render slider value as visual
+  const renderSliderValue = (field) => {
+    const value = parseInt(field.value) || 5;
+    const percentage = (value / 10) * 100;
+    
+    return (
+      <div className={styles.sliderDisplay}>
+        <div className={styles.sliderTrack}>
+          <div 
+            className={styles.sliderFill} 
+            style={{ width: `${percentage}%` }}
+          />
+        </div>
+        <span className={styles.sliderValue}>{value}/10</span>
+      </div>
+    );
+  };
   
   // TODO: Consider calling view tracking API here in a useEffect hook
   // useEffect(() => {
@@ -17,25 +109,31 @@ export default function ProfileDetailClient({ initialProfile, initialError }) {
   // }, [profile?.id]);
 
   const handleConnect = async () => {
-    alert('Connect button clicked (Implement action)');
-    // TODO: Implement connection logic 
-    // Check if frame SDK is available
-    // if (frame.sdk && profile?.fid) {
-    //   try {
-    //     console.log(`Attempting to view profile FID: ${profile.fid}`);
-    //     await frame.sdk.actions.viewProfile({ fid: profile.fid });
-    //   } catch (error) {
-    //     console.error('Frame SDK action failed:', error);
-    //     alert('Could not open profile in Farcaster client.');
-    //   }
-    // } else {
-    //   alert('Farcaster client action not available.');
-    // }
+    // TODO: Implement connection logic without alert (blocked in frame)
+    console.log('Connect button clicked for FID:', profile?.fid);
   };
 
   const handleReport = () => {
-    alert('Report button clicked (Implement action)');
-    // TODO: Implement report modal/logic (e.g., POST /api/report)
+    // TODO: Implement report modal/logic without alert (blocked in frame)
+    console.log('Report button clicked for profile:', profile?.id);
+  };
+  
+  const getProfileTypeTitle = (type) => {
+    switch (type) {
+      case 'partner': return 'Dating Profile';
+      case 'friend': return 'Friend Profile';
+      case 'job': return 'Professional Profile';
+      default: return 'Profile';
+    }
+  };
+  
+  const getTypeColor = (type) => {
+    switch (type) {
+      case 'partner': return 'var(--connection-partner)';
+      case 'friend': return 'var(--connection-friend)';
+      case 'job': return 'var(--connection-job)';
+      default: return 'var(--brand-primary)';
+    }
   };
 
   // Handle error state
@@ -79,25 +177,118 @@ export default function ProfileDetailClient({ initialProfile, initialError }) {
 
         {/* Profile Content */}
         <div className={styles.profileContent}>
-          <div className={styles.profileHeader}>
-            <div className={styles.profileInfo}>
-              <h3 className={styles.displayName}>{profile.display_name || `Profile ${profile.id}`}</h3>
-              <p className={styles.profileType}>Type: {profile.type}</p>
+          {/* User Header */}
+          <div className={styles.userHeader}>
+            <div className={styles.userAvatar}>
+              <Image 
+                src={profile.avatar_url || 'https://via.placeholder.com/80'}
+                alt={profile.display_name || 'User avatar'}
+                width={80}
+                height={80}
+                className={styles.avatar}
+                unoptimized
+              />
+            </div>
+            <div className={styles.userInfo}>
+              <h2 className={styles.displayName}>{profile.display_name || `User ${profile.fid}`}</h2>
+              <div className={styles.profileTypeBadge} style={{backgroundColor: getTypeColor(profile.profile_type)}}>
+                {getProfileTypeTitle(profile.profile_type)}
+              </div>
+              <div className={styles.userStats}>
+                {fieldValues['age'] && (
+                  <span className={styles.stat}>{fieldValues['age']} years old</span>
+                )}
+                {fieldValues['location'] && (
+                  <span className={styles.stat}>{fieldValues['location']}</span>
+                )}
+                <span className={styles.stat}>{profile.view_count || 0} views</span>
+              </div>
+              
+              {/* Metadata Tags */}
+              {getMetadataTags().length > 0 && (
+                <div className={styles.tagContainer}>
+                  {getMetadataTags().map((tag, index) => (
+                    <span 
+                      key={index} 
+                      className={styles.metadataTag}
+                      style={{ backgroundColor: tag.color }}
+                    >
+                      {tag.text}
+                    </span>
+                  ))}
+                </div>
+              )}
+              
+              {/* Seeking Information */}
+              {getSeekingInfo() && (
+                <div className={styles.seekingInfo}>
+                  {getSeekingInfo()}
+                </div>
+              )}
             </div>
           </div>
           
-          {/* Profile Fields */}
-          <div className={styles.profileFields}>
-            <h4>Profile Details</h4>
-            <pre className={styles.fieldsJson}>{JSON.stringify(profile.fields || {}, null, 2)}</pre>
-          </div>
+          {/* Conversational Q&A */}
+          {getConversationalFields().length > 0 && (
+            <div className={styles.fieldSection}>
+              <h3 className={styles.sectionTitle}>About Me</h3>
+              <div className={styles.fieldList}>
+                {getConversationalFields().map(field => (
+                  <div key={field.field_key} className={styles.conversationalField}>
+                    <div className={styles.questionText}>{field.field_label}</div>
+                    <div className={styles.answerText}>
+                      {field.value}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          
+          {/* Preferences & Choices */}
+          {getChoiceFields().length > 0 && (
+            <div className={styles.fieldSection}>
+              <h3 className={styles.sectionTitle}>Preferences</h3>
+              <div className={styles.preferenceGrid}>
+                {getChoiceFields().map(field => (
+                  <div key={field.field_key} className={styles.preferenceItem}>
+                    <div className={styles.preferenceLabel}>{field.field_label}</div>
+                    <div className={styles.preferenceValue}>
+                      {field.value}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          
+          {/* Personality Traits (Sliders) */}
+          {getSliderFields().length > 0 && (
+            <div className={styles.fieldSection}>
+              <h3 className={styles.sectionTitle}>Personality</h3>
+              <div className={styles.sliderList}>
+                {getSliderFields().map(field => (
+                  <div key={field.field_key} className={styles.sliderField}>
+                    <div className={styles.sliderLabel}>{field.field_label}</div>
+                    {renderSliderValue(field)}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Action Buttons */}
           <div className={styles.actionButtons}>
             <button className={styles.connectButton} onClick={handleConnect}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
+                <path d="M240,128a87.89,87.89,0,0,1-24.18,60.9l-56.06-40.31a32,32,0,1,0-63.52,0L40.18,188.9A88,88,0,1,1,240,128Z"></path>
+              </svg>
               Connect
             </button>
             <button className={styles.reportButton} onClick={handleReport}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
+                <path d="M236.8,188.09,149.35,36.22h0a24.76,24.76,0,0,0-42.7,0L19.2,188.09a23.51,23.51,0,0,0,0,23.72A24.35,24.35,0,0,0,40.55,224h174.9a24.35,24.35,0,0,0,21.33-12.19A23.51,23.51,0,0,0,236.8,188.09ZM120,104a8,8,0,0,1,16,0v40a8,8,0,0,1-16,0Zm8,88a12,12,0,1,1,12-12A12,12,0,0,1,128,192Z"></path>
+              </svg>
               Report
             </button>
           </div>

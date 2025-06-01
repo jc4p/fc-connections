@@ -4,7 +4,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { getFieldDefinitions } from '@/lib/api';
 import styles from './DynamicProfileForm.module.css';
 
-// Input components (TextInput, TextAreaInput, SelectInput)
+// Input components (TextInput, TextAreaInput, SelectInput, SliderInput, MultiSelectInput)
 const TextInput = ({ field, value, onChange }) => (
     <div className={styles.fieldWrapper}>
         <label htmlFor={field.field_key} className={styles.label}>{field.field_label}</label>
@@ -16,7 +16,7 @@ const TextInput = ({ field, value, onChange }) => (
             onChange={onChange}
             required={!!field.is_required}
             className={styles.textInput}
-            maxLength={field.validation?.maxLength}
+            maxLength={field.char_limit || field.validation?.maxLength}
             step={field.field_type === 'number' ? (field.validation?.step || 'any') : undefined}
             min={field.field_type === 'number' ? field.validation?.min : undefined}
             max={field.field_type === 'number' ? field.validation?.max : undefined}
@@ -36,37 +36,124 @@ const TextAreaInput = ({ field, value, onChange }) => (
             onChange={onChange}
             required={!!field.is_required}
             className={styles.textArea}
-            maxLength={field.validation?.maxLength}
+            maxLength={field.char_limit || field.validation?.maxLength}
         />
          {field.helperText && <p className={styles.helperText}>{field.helperText}</p>}
     </div>
 );
 
-const SelectInput = ({ field, value, onChange }) => (
-    <div className={styles.fieldWrapper}>
-        <label htmlFor={field.field_key} className={styles.label}>{field.field_label}</label>
-        <select
-            id={field.field_key}
-            name={field.field_key}
-            value={value || ''}
-            onChange={onChange}
-            required={!!field.is_required}
-            className={styles.select}
-        >
-            <option value="" disabled>{field.placeholder || 'Select...'}</option>
-            {field.options?.map(option => (
-                <option key={option.value} value={option.value}>{option.label}</option>
-            ))}
-        </select>
-        {field.helperText && <p className={styles.helperText}>{field.helperText}</p>}
-    </div>
-);
+const SelectInput = ({ field, value, onChange }) => {
+    // Parse field_options if it's a JSON string
+    const options = field.field_options ? 
+        (typeof field.field_options === 'string' ? JSON.parse(field.field_options) : field.field_options) : 
+        (field.options || []);
+    
+    return (
+        <div className={styles.fieldWrapper}>
+            <label htmlFor={field.field_key} className={styles.label}>{field.field_label}</label>
+            <select
+                id={field.field_key}
+                name={field.field_key}
+                value={value || ''}
+                onChange={onChange}
+                required={!!field.is_required}
+                className={styles.select}
+            >
+                <option value="" disabled>{field.placeholder || 'Select...'}</option>
+                {options.map((option, index) => (
+                    <option key={index} value={option}>{option}</option>
+                ))}
+            </select>
+            {field.helperText && <p className={styles.helperText}>{field.helperText}</p>}
+        </div>
+    );
+};
+
+const SliderInput = ({ field, value, onChange }) => {
+    const min = field.slider_min || 1;
+    const max = field.slider_max || 10;
+    const labels = field.slider_labels ? 
+        (typeof field.slider_labels === 'string' ? JSON.parse(field.slider_labels) : field.slider_labels) : 
+        {};
+    
+    return (
+        <div className={styles.fieldWrapper}>
+            <label htmlFor={field.field_key} className={styles.label}>{field.field_label}</label>
+            <div className={styles.sliderContainer}>
+                <div className={styles.sliderLabels}>
+                    <span>{labels[min] || min}</span>
+                    <span>{labels[max] || max}</span>
+                </div>
+                <input
+                    type="range"
+                    id={field.field_key}
+                    name={field.field_key}
+                    min={min}
+                    max={max}
+                    value={value || min}
+                    onChange={onChange}
+                    required={!!field.is_required}
+                    className={styles.slider}
+                />
+                <div className={styles.sliderValue}>{value || min}</div>
+            </div>
+            {field.helperText && <p className={styles.helperText}>{field.helperText}</p>}
+        </div>
+    );
+};
+
+const MultiSelectInput = ({ field, value, onChange }) => {
+    // Parse field_options if it's a JSON string
+    const options = field.field_options ? 
+        (typeof field.field_options === 'string' ? JSON.parse(field.field_options) : field.field_options) : 
+        (field.options || []);
+    
+    // Value should be an array for multi-select
+    const selectedValues = Array.isArray(value) ? value : (value ? [value] : []);
+    
+    const handleCheckboxChange = (option) => {
+        const newValues = selectedValues.includes(option)
+            ? selectedValues.filter(v => v !== option)
+            : [...selectedValues, option];
+        
+        // Create a synthetic event to maintain compatibility with onChange handler
+        const syntheticEvent = {
+            target: {
+                name: field.field_key,
+                value: newValues,
+                type: 'checkbox'
+            }
+        };
+        onChange(syntheticEvent);
+    };
+    
+    return (
+        <div className={styles.fieldWrapper}>
+            <label className={styles.label}>{field.field_label}</label>
+            <div className={styles.multiSelectContainer}>
+                {options.map((option, index) => (
+                    <label key={index} className={styles.checkboxLabel}>
+                        <input
+                            type="checkbox"
+                            checked={selectedValues.includes(option)}
+                            onChange={() => handleCheckboxChange(option)}
+                            className={styles.checkbox}
+                        />
+                        <span>{option}</span>
+                    </label>
+                ))}
+            </div>
+            {field.helperText && <p className={styles.helperText}>{field.helperText}</p>}
+        </div>
+    );
+};
 
 const MAX_RETRIES = 3;
 const INITIAL_DELAY_MS = 500;
 
 const DynamicProfileForm = ({ profileType, initialData = {}, onSubmit, submitButtonText = "Submit", isSubmitting = false }) => {
-    const [fieldDefinitions, setFieldDefinitions] = useState([]);
+    const [fieldDefinitions, setFieldDefinitions] = useState({ essential: [], extra: [] });
+    const [showingExtra, setShowingExtra] = useState(false);
     const [formData, setFormData] = useState({});
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -98,7 +185,20 @@ const DynamicProfileForm = ({ profileType, initialData = {}, onSubmit, submitBut
                     console.log(`Attempt ${retries + 1} fetching definitions for ${profileType}...`);
                     const definitions = await getFieldDefinitions(profileType);
                     if (!isMounted) return;
-                    setFieldDefinitions(Array.isArray(definitions) ? definitions : []);
+                    
+                    // Handle both old flat array format and new categorized format
+                    if (Array.isArray(definitions)) {
+                        // Old format - treat all as essential
+                        setFieldDefinitions({ essential: definitions, extra: [] });
+                    } else if (definitions && definitions.essential && definitions.extra) {
+                        // New categorized format
+                        setFieldDefinitions({
+                            essential: definitions.essential || [],
+                            extra: definitions.extra || []
+                        });
+                    } else {
+                        setFieldDefinitions({ essential: [], extra: [] });
+                    }
                     success = true;
                     console.log(`Successfully fetched definitions for ${profileType}.`);
                 } catch (err) {
@@ -126,22 +226,26 @@ const DynamicProfileForm = ({ profileType, initialData = {}, onSubmit, submitBut
     // Effect 2: Initialize formData only when definitions *successfully load* or initialData changes.
     useEffect(() => {
         // Only initialize if definitions exist AND we are not loading/erroring
-        if (!isLoading && !error && fieldDefinitions.length > 0) { 
+        const allFields = [...(fieldDefinitions.essential || []), ...(fieldDefinitions.extra || [])];
+        if (!isLoading && !error && allFields.length > 0) { 
             // Check if formData needs initialization or reset based on definitions
-            // This comparison assumes fieldDefinitions content doesn't change without profileType changing
-            // If formData keys don't match definition keys, re-initialize
             const currentKeys = Object.keys(formData).sort().join(',');
-            const definitionKeys = fieldDefinitions.map(f => f.field_key).sort().join(',');
+            const definitionKeys = allFields.map(f => f.field_key).sort().join(',');
             
             if (currentKeys !== definitionKeys || Object.keys(formData).length === 0) {
                  console.log("Initializing formData based on new definitions and initialData...");
-                 const initialFormState = fieldDefinitions.reduce((acc, field) => {
-                    acc[field.field_key] = memoizedInitialData[field.field_key] ?? field.defaultValue ?? '';
+                 const initialFormState = allFields.reduce((acc, field) => {
+                    // Handle multi_select fields - initialize as empty array
+                    if (field.field_type === 'multi_select') {
+                        acc[field.field_key] = memoizedInitialData[field.field_key] ?? [];
+                    } else {
+                        acc[field.field_key] = memoizedInitialData[field.field_key] ?? field.defaultValue ?? '';
+                    }
                     return acc;
                 }, {});
                  setFormData(initialFormState);
             }
-        } else if (!isLoading && fieldDefinitions.length === 0) {
+        } else if (!isLoading && allFields.length === 0) {
             // If loading finished and there are no definitions, ensure form data is empty
             setFormData({});
         }
@@ -153,7 +257,7 @@ const DynamicProfileForm = ({ profileType, initialData = {}, onSubmit, submitBut
         const { name, value, type, checked } = e.target;
         setFormData(prevData => ({
             ...prevData,
-            [name]: type === 'checkbox' ? checked : value
+            [name]: type === 'checkbox' ? (Array.isArray(value) ? value : checked) : value
         }));
     };
 
@@ -172,31 +276,75 @@ const DynamicProfileForm = ({ profileType, initialData = {}, onSubmit, submitBut
         return <div className={styles.errorText}>{error}</div>;
     }
 
-     if (!isLoading && fieldDefinitions.length === 0 && !error) {
+     const allFields = [...(fieldDefinitions.essential || []), ...(fieldDefinitions.extra || [])];
+     if (!isLoading && allFields.length === 0 && !error) {
         return <div className={styles.warningText}>No form fields are defined for profile type: {profileType}.</div>;
     }
 
+    const renderField = (field) => {
+        const value = formData[field.field_key]; 
+        switch (field.field_type) { 
+            case 'text':
+            case 'email':
+            case 'url':
+            case 'number':
+                return <TextInput key={field.field_key} field={field} value={value} onChange={handleChange} />;
+            case 'textarea':
+                return <TextAreaInput key={field.field_key} field={field} value={value} onChange={handleChange} />;
+            case 'select':
+            case 'dropdown':
+                return <SelectInput key={field.field_key} field={field} value={value} onChange={handleChange} />;
+            case 'slider':
+                return <SliderInput key={field.field_key} field={field} value={value} onChange={handleChange} />;
+            case 'multi_select':
+                return <MultiSelectInput key={field.field_key} field={field} value={value} onChange={handleChange} />;
+            case 'json_array':
+                return <TextAreaInput key={field.field_key} field={{...field, field_label: `${field.field_label} (comma-separated)`}} value={value} onChange={handleChange} />;
+            default:
+                console.warn(`Unsupported field type: ${field.field_type} for key ${field.field_key}`);
+                return <div key={field.field_key} className={styles.warningText}>Unsupported field type: {field.field_type}</div>;
+        }
+    };
+
     return (
         <form onSubmit={handleSubmit}>
-            {fieldDefinitions.map(field => {
-                const value = formData[field.field_key]; 
-                switch (field.field_type) { 
-                    case 'text':
-                    case 'email':
-                    case 'url':
-                    case 'number':
-                        return <TextInput key={field.field_key} field={field} value={value} onChange={handleChange} />;
-                    case 'textarea':
-                        return <TextAreaInput key={field.field_key} field={field} value={value} onChange={handleChange} />;
-                    case 'select':
-                        return <SelectInput key={field.field_key} field={field} value={value} onChange={handleChange} />;
-                    case 'json_array':
-                        return <TextAreaInput key={field.field_key} field={{...field, field_label: `${field.field_label} (comma-separated)`}} value={value} onChange={handleChange} />;
-                    default:
-                        console.warn(`Unsupported field type: ${field.field_type} for key ${field.field_key}`);
-                        return <div key={field.field_key} className={styles.warningText}>Unsupported field type: {field.field_type}</div>;
-                }
-            })}
+            {/* Essential Fields */}
+            {fieldDefinitions.essential && fieldDefinitions.essential.length > 0 && (
+                <div className={styles.fieldSection}>
+                    <h3 className={styles.sectionTitle}>Essential Information</h3>
+                    {fieldDefinitions.essential.map(renderField)}
+                </div>
+            )}
+            
+            {/* Extra Fields */}
+            {fieldDefinitions.extra && fieldDefinitions.extra.length > 0 && (
+                <div className={styles.fieldSection}>
+                    {!showingExtra ? (
+                        <button 
+                            type="button" 
+                            className={styles.showMoreButton}
+                            onClick={() => setShowingExtra(true)}
+                        >
+                            Show More Details ({fieldDefinitions.extra.length} more fields)
+                        </button>
+                    ) : (
+                        <>
+                            <div className={styles.sectionHeader}>
+                                <h3 className={styles.sectionTitle}>Additional Details</h3>
+                                <button 
+                                    type="button" 
+                                    className={styles.showLessButton}
+                                    onClick={() => setShowingExtra(false)}
+                                >
+                                    Show Less
+                                </button>
+                            </div>
+                            {fieldDefinitions.extra.map(renderField)}
+                        </>
+                    )}
+                </div>
+            )}
+            
             <button
                 type="submit"
                 className={styles.submitButton}

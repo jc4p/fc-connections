@@ -5,7 +5,7 @@ import ProfileDetailClient from '@/components/ProfileDetailClient';
 // import CustomBackButton from '@/components/CustomBackButton'; // If it uses hooks, needs to be Client
 
 export default async function ProfileDetailPage({ params }) {
-  const profileId = params.id;
+  const profileId = (await params).id;
   let initialProfile = null;
   let initialError = null;
 
@@ -18,7 +18,7 @@ export default async function ProfileDetailPage({ params }) {
       // TODO: Implement view tracking server-side if possible, or trigger from client
       console.log(`Fetching profile ${profileId} on server...`);
       const data = await getProfile(profileId);
-      initialProfile = data?.profile; // Adjust based on API response structure
+      initialProfile = data; // API now returns profile data directly
       if (!initialProfile) {
           throw new Error('Profile not found from API.');
       }

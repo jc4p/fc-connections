@@ -1,5 +1,66 @@
 .container {
-    /* Add padding or margins if needed */
+    min-height: 100vh;
+    background-color: var(--brand-background);
+    font-family: var(--font-primary);
+}
+
+.main {
+    max-width: 30rem;
+    margin: 0 auto;
+    padding-bottom: 2rem;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    padding-bottom: 0.5rem;
+}
+
+.closeButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 9999px;
+    background-color: transparent;
+    border: none;
+    color: var(--text-primary);
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background-color 0.2s ease;
+}
+
+.closeButton:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.closeButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pageTitle {
+    color: var(--text-primary);
+    font-size: 1.25rem;
+    font-weight: 600;
+    line-height: 1.75rem;
+    margin: 0;
+    flex: 1;
+    text-align: center;
+    margin-right: 2.5rem; /* Balance the close button */
+}
+
+.sectionTitle {
+    color: var(--text-primary);
+    font-size: 1.125rem;
+    font-weight: 600;
+    line-height: 1.75rem;
+    margin: 0;
+    margin-bottom: 1rem;
+    padding: 0 1rem;
 }
 
 .loadingText {

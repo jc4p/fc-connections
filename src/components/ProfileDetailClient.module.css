@@ -58,15 +58,32 @@
 
 /* Profile Content */
 .profileContent {
+  padding: 0;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* User Header */
+.userHeader {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
   padding: 1rem;
+  margin-bottom: 1.5rem;
 }
 
-.profileHeader {
-  margin-bottom: 2rem;
+.userAvatar {
+  flex-shrink: 0;
 }
 
-.profileInfo {
-  text-align: center;
+.avatar {
+  border-radius: 50%;
+  border: 3px solid var(--border-light);
+}
+
+.userInfo {
+  flex: 1;
+  min-width: 0;
 }
 
 .displayName {
@@ -75,58 +92,251 @@
   font-weight: 700;
   margin: 0;
   margin-bottom: 0.5rem;
+  line-height: 1.2;
 }
 
-.profileType {
+.profileTypeBadge {
+  display: inline-block;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.userStats {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.stat {
   color: var(--text-secondary);
-  font-size: 1rem;
-  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* Metadata Tags */
+.tagContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.metadataTag {
+  display: inline-block;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
   text-transform: capitalize;
 }
 
-/* Profile Fields */
-.profileFields {
-  background-color: white;
-  border-radius: 0.75rem;
-  padding: 1.5rem;
-  margin-bottom: 2rem;
-  border: 1px solid var(--border-light);
+/* Seeking Information */
+.seekingInfo {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  font-style: italic;
+  margin-top: 0.75rem;
+  padding: 0.5rem;
+  background-color: color-mix(in srgb, var(--brand-primary) 5%, transparent);
+  border-radius: 0.5rem;
+  border-left: 3px solid var(--brand-primary);
 }
 
-.profileFields h4 {
+/* Field Sections */
+.fieldSection {
+  margin-bottom: 2rem;
+  padding: 0 1rem;
+}
+
+.sectionTitle {
   color: var(--text-primary);
   font-size: 1.125rem;
   font-weight: 600;
   margin: 0;
   margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--border-light);
 }
 
-.fieldsJson {
-  background-color: var(--input-bg);
-  border-radius: 0.5rem;
+/* Field Grid for Essential Info */
+.fieldGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+/* Field List for Additional Details */
+.fieldList {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.fieldItem {
+  background-color: white;
+  border-radius: 0.75rem;
   padding: 1rem;
+  border: 1px solid var(--border-light);
+  transition: box-shadow 0.2s ease;
+}
+
+.fieldItem:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.fieldLabel {
+  color: var(--text-secondary);
   font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.fieldValue {
   color: var(--text-primary);
-  overflow-x: auto;
-  white-space: pre-wrap;
-  margin: 0;
-  border: 1px solid var(--border-medium);
+  font-size: 1rem;
+  line-height: 1.5;
+  font-weight: 500;
+}
+
+/* Conversational Fields */
+.conversationalField {
+  background-color: white;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  border: 1px solid var(--border-light);
+  transition: box-shadow 0.2s ease;
+}
+
+.conversationalField:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.questionText {
+  color: var(--brand-primary);
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  line-height: 1.4;
+}
+
+.answerText {
+  color: var(--text-primary);
+  font-size: 1rem;
+  line-height: 1.6;
+  font-weight: 400;
+}
+
+/* Preference Grid */
+.preferenceGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.preferenceItem {
+  background-color: var(--input-bg);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  border: 1px solid var(--border-light);
+}
+
+.preferenceLabel {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.preferenceValue {
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+/* Slider Fields */
+.sliderList {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.sliderField {
+  background-color: white;
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  border: 1px solid var(--border-light);
+}
+
+.sliderLabel {
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  line-height: 1.4;
+}
+
+.sliderDisplay {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.sliderTrack {
+  flex: 1;
+  height: 8px;
+  background-color: var(--border-light);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.sliderFill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--brand-primary), var(--connection-friend));
+  transition: width 0.3s ease;
+  border-radius: 4px;
+}
+
+.sliderValue {
+  color: var(--brand-primary);
+  font-size: 0.875rem;
+  font-weight: 600;
+  min-width: 3rem;
+  text-align: center;
 }
 
 /* Action Buttons */
 .actionButtons {
   display: flex;
   gap: 1rem;
-  padding: 0 1rem;
+  padding: 1rem;
+  margin-top: 2rem;
+  border-top: 1px solid var(--border-light);
+  background-color: var(--brand-background);
 }
 
 .connectButton {
   flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
   background-color: var(--brand-primary);
-  color: var(--text-primary);
+  color: white;
   border: none;
   border-radius: 0.75rem;
-  padding: 1rem;
+  padding: 1rem 1.5rem;
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.2s ease;
@@ -138,20 +348,25 @@
 }
 
 .reportButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
   background-color: transparent;
-  color: var(--connection-partner);
-  border: 1px solid var(--connection-partner);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-light);
   border-radius: 0.75rem;
   padding: 1rem 1.5rem;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
   font-size: 0.875rem;
 }
 
 .reportButton:hover {
-  background-color: var(--connection-partner);
-  color: white;
+  background-color: color-mix(in srgb, var(--connection-partner) 10%, transparent);
+  color: var(--connection-partner);
+  border-color: var(--connection-partner);
 }
 
 /* Error State */

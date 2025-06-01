@@ -22,7 +22,26 @@ profiles.get('/', async (c) => {
     
     const { results } = await c.env.DB.prepare(query).bind(...bindings).all();
     
-    // Optionally, get total count for pagination metadata
+    // For each profile, fetch its field values
+    const profilesWithFields = await Promise.all(results.map(async (profile) => {
+      const { results: fieldValues } = await c.env.DB.prepare(`
+        SELECT pfd.field_key, pfd.field_label, pfd.field_type, pfv.field_value
+        FROM profile_field_values pfv
+        JOIN profile_field_definitions pfd ON pfv.field_id = pfd.id
+        WHERE pfv.profile_id = ?
+        ORDER BY pfd.field_order
+      `).bind(profile.id).all();
+      
+      return {
+        ...profile,
+        profile_field_values: fieldValues.map(field => ({
+          field_key: field.field_key,
+          value: field.field_value
+        }))
+      };
+    }));
+    
+    // Get total count for pagination metadata
     let countQuery = 'SELECT COUNT(*) as count FROM profiles WHERE is_active = 1';
     const countBindings = [];
     if (type) {
@@ -33,7 +52,7 @@ profiles.get('/', async (c) => {
     const totalCount = countResult?.count || 0;
 
     return c.json({ 
-      profiles: results || [],
+      profiles: profilesWithFields || [],
       pagination: {
         total: totalCount,
         limit,
@@ -78,8 +97,13 @@ profiles.get('/:id', async (c) => {
     `).bind(profileId).run();
     
     return c.json({ 
-      profile,
-      fields: fieldValues 
+      ...profile,
+      profile_field_values: fieldValues.map(field => ({
+        field_key: field.field_key,
+        field_label: field.field_label,
+        field_type: field.field_type,
+        value: field.field_value
+      }))
     });
   } catch (error) {
     console.error(`Error fetching profile ${profileId}:`, error);

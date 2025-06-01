@@ -40,9 +40,11 @@ export default function BrowseClient({ profileType, initialProfiles, initialErro
           setProfiles(prev => [...prev, ...newProfiles]); // Append for pagination
       }
       
-      // TODO: Adjust hasMore logic based on API
-      setHasMore(newProfiles.length > 0);
-      console.log(`Client fetch found ${newProfiles.length} profiles. Has More: ${newProfiles.length > 0}`);
+      // Fix hasMore logic - we have more if we got a full page of results
+      const pageSize = 20; // Default from API
+      const hasMoreResults = newProfiles.length === pageSize;
+      setHasMore(hasMoreResults);
+      console.log(`Client fetch found ${newProfiles.length} profiles. Has More: ${hasMoreResults}`);
 
     } catch (err) {
       const errorMsg = err.message || `Failed to load page ${newPage} for ${profileType} profiles.`;
@@ -128,12 +130,6 @@ export default function BrowseClient({ profileType, initialProfiles, initialErro
           <button className={styles.loadMoreButton} onClick={loadMore}>
             Load More
           </button>
-        )}
-        
-        {!loading && !hasMore && profiles.length > 0 && (
-          <div className={styles.endMessage}>
-            No more profiles to load.
-          </div>
         )}
       </div>
 

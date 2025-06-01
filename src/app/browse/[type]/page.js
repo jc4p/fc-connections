@@ -25,8 +25,9 @@ export default async function BrowsePage({ params, searchParams }) {
     console.log(`Fetching initial profiles for type: ${profileType} on server...`);
     const data = await getProfiles(apiParams);
     initialProfiles = data?.profiles || [];
-    // TODO: Adjust hasMore logic based on actual API pagination response
-    initialHasMore = initialProfiles.length > 0; // Simple check for now
+    // Fix hasMore logic - we have more if we got a full page of results  
+    const pageSize = 20; // Default from API
+    initialHasMore = initialProfiles.length === pageSize;
     console.log(`Initial fetch found ${initialProfiles.length} profiles.`);
   } catch (err) {
     initialError = err.message || `Failed to load initial ${profileType} profiles.`;

@@ -66,11 +66,9 @@ export default function MyProfilesClient() {
       await deleteProfile(profileId);
       // Update state locally to reflect deletion immediately
       setProfiles(prev => ({ ...prev, [type]: null }));
-      alert('Profile deleted.');
     } catch (err) {
       const errorMsg = err.message || 'Failed to delete profile.';
       setError(errorMsg);
-      alert(`Error: ${errorMsg}`); // Simple alert for feedback
       console.error("MyProfilesClient handleDelete Error:", err);
     }
   };

@@ -83,11 +83,21 @@ export async function getUserProfiles(fid) {
 
 /**
  * Fetches profiles, optionally filtering by type and other params.
- * GET /profiles?type=...&page=...&filters=...
- * @param {object} params - { type, page, filters, ... }
+ * GET /profiles?type=...&limit=...&offset=...&filters=...
+ * @param {object} params - { type, page, limit, filters, ... }
  */
 export async function getProfiles(params = {}) {
-  const query = new URLSearchParams(params).toString();
+  // Convert page to offset/limit for backend API
+  const { page = 1, limit = 20, ...otherParams } = params;
+  const offset = (page - 1) * limit;
+  
+  const apiParams = {
+    ...otherParams,
+    limit,
+    offset
+  };
+  
+  const query = new URLSearchParams(apiParams).toString();
   return fetchApi(`/profiles?${query}`);
 }
 
@@ -145,8 +155,7 @@ export async function deleteProfile(profileId) {
  */
 export async function getFieldDefinitions(profileType) {
   if (!profileType) throw new Error('Profile type is required.');
-  // TODO: Verify this endpoint exists in your API based on PAGE_BREAKDOWN.md
-  // Assuming /field-definitions/:type
+  // Corrected endpoint path to match actual route mounting in index.js
   return fetchApi(`/field-definitions/${profileType}`); 
 }
 
