@@ -7,7 +7,7 @@ compatibility_flags = ["nodejs_compat"]
 [[d1_databases]]
 binding = "DB" # Available in your Worker as env.DB
 database_name = "fc_connections"
-database_id = "f0611df6-149e-4198-a781-fdb85136ac35"
+database_id = "993be606-bc98-4af2-83a4-f76593b103fd"
 
 # Environment variables
 [vars]
